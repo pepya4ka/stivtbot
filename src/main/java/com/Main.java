@@ -23,7 +23,7 @@ public class Main {
     }
 
     public void run() {
-        //connectToDB();
+        connectToDB();
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {
