@@ -25,11 +25,17 @@ public class Bot extends TelegramLongPollingBot {
     private final String connectionString = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net";
     private final String login = "baab4a4396de37";
     private final String password = "3f075f47";
-    private static Bot bot;
 
     public static void main(String[] args) {
-        bot = new Bot();
-        bot.run();
+
+        //connectToDB();
+        ApiContextInitializer.init();
+        TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
+        try {
+            telegramBotsApi.registerBot(new Bot());
+        } catch (TelegramApiRequestException e) {
+            e.printStackTrace();
+        }
     }
 
     private void connectToDB() {
@@ -56,17 +62,6 @@ public class Bot extends TelegramLongPollingBot {
             System.out.println("Can't close connection");
             throwables.printStackTrace();
             return;
-        }
-    }
-
-    public void run() {
-        //connectToDB();
-        ApiContextInitializer.init();
-        TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
-        try {
-            telegramBotsApi.registerBot(bot);
-        } catch (TelegramApiRequestException e) {
-            e.printStackTrace();
         }
     }
 
