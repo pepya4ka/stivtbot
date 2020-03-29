@@ -25,9 +25,10 @@ public class Bot extends TelegramLongPollingBot {
     private final String connectionString = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net";
     private final String login = "baab4a4396de37";
     private final String password = "3f075f47";
+    private static Bot bot;
 
     public static void main(String[] args) {
-        Bot bot = new Bot();
+        bot = new Bot();
         bot.run();
     }
 
@@ -63,7 +64,7 @@ public class Bot extends TelegramLongPollingBot {
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {
-            telegramBotsApi.registerBot(new Bot());
+            telegramBotsApi.registerBot(bot);
         } catch (TelegramApiRequestException e) {
             e.printStackTrace();
         }
