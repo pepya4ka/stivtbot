@@ -59,7 +59,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public void run() {
-        connectToDB();
+        //connectToDB();
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {
