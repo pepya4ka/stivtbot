@@ -21,24 +21,13 @@ import java.util.*;
 public class Bot extends TelegramLongPollingBot {
 
 
-    private final String driverName = "com.mysql.jdbc.Driver";
-    private final String connectionString = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net";
-    private final String login = "baab4a4396de37";
-    private final String password = "3f075f47";
+    private static final String driverName = "com.mysql.jdbc.Driver";
+    private static final String connectionString = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net";
+    private static final String login = "baab4a4396de37";
+    private static final String password = "3f075f47";
 
     public static void main(String[] args) {
 
-        //connectToDB();
-        ApiContextInitializer.init();
-        TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
-        try {
-            telegramBotsApi.registerBot(new Bot());
-        } catch (TelegramApiRequestException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void connectToDB() {
         try {
             Class.forName(driverName);
         } catch (ClassNotFoundException e) {
@@ -63,6 +52,18 @@ public class Bot extends TelegramLongPollingBot {
             throwables.printStackTrace();
             return;
         }
+
+        ApiContextInitializer.init();
+        TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
+        try {
+            telegramBotsApi.registerBot(new Bot());
+        } catch (TelegramApiRequestException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void connectToDB() {
+
     }
 
     public void sendMsg(Message message, String text) {
