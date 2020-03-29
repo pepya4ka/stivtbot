@@ -28,7 +28,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.Bot</mainClass>
+                            <mainClass>com.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -53,7 +53,7 @@
                     <appName>stivtbot</appName>
                     <processTypes>
                         <worker>
-                            java $JAVA_OPTS -cp target/classes:target/dependency/* com.Bot
+                            java $JAVA_OPTS -cp target/classes:target/dependency/* com.Main
                         </worker>
                     </processTypes>
                 </configuration>
