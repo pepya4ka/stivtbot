@@ -85,22 +85,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public void showAllClient(Message message) {
-
-        //List<Person> personList = databaseClient.selectAllClient();
-        List<Person> personList = new ArrayList<>();
-        personList.addAll(databaseClient.selectAllClient());
-        StringBuilder stringBuilder = new StringBuilder();
-
-
-        stringBuilder.append("Список клиентов:\n");
-        for (Person temp : personList) {
-            stringBuilder.append(temp.getId());
-            stringBuilder.append(". ");
-            stringBuilder.append(temp.getName());
-            stringBuilder.append("\n");
-        }
-
-        sendMsg(message, stringBuilder.toString());
+        sendMsg(message,databaseClient.selectAllClient());
     }
 
     public boolean isMatchName(Message message, String msg) {
