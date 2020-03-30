@@ -78,6 +78,8 @@ public class Bot extends TelegramLongPollingBot {
                     if (flName && flAge && !flPlaceWork) {
                         flPlaceWork = isMatchPlaceWork(message, message.getText());
                     }
+                    if (flPlaceWork)
+                        sendMsg(message, "Клиент успешно добавлен");
             }
         }
     }
@@ -134,7 +136,6 @@ public class Bot extends TelegramLongPollingBot {
         if (matcher.find()) {
             person.setPlaceWork(msg);
             databaseClient.addClient(person);
-            sendMsg(message, "Клиент успешно добавлен");
             flName = false;
             flAge = false;
             flPlaceWork = false;
