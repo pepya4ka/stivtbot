@@ -18,6 +18,9 @@ public class Bot extends TelegramLongPollingBot {
 
     DatabaseClient databaseClient;
     Person person;
+    private boolean flName = false;
+    private boolean flAge = false;
+    private boolean flPlaceWork = false;
 
     public Bot() {
         databaseClient = new DatabaseClient();
@@ -66,9 +69,15 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message, sTime);
                     break;
                 default:
-                    isMatchName(message, message.getText());
-                    isMatchAge(message, message.getText());
-                    isMatchPlaceWork(message, message.getText());
+                    if (!flName && !flAge && !flPlaceWork) {
+                        flName = isMatchName(message, message.getText());
+                    }
+                    if (flName && !flAge && !flPlaceWork) {
+                        flAge = isMatchAge(message, message.getText());
+                    }
+                    if (flName && flAge && !flPlaceWork) {
+                        flPlaceWork = isMatchPlaceWork(message, message.getText());
+                    }
             }
         }
     }
@@ -123,6 +132,9 @@ public class Bot extends TelegramLongPollingBot {
             person.setPlaceWork(msg);
             databaseClient.addClient(person);
             sendMsg(message, "Клиент успешно добавлен");
+            flName = false;
+            flAge = false;
+            flPlaceWork = false;
             return true;
         } else {
             sendMsg(message, "Неверно введены данные, попробуйте еще раз");
