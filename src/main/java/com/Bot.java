@@ -1,31 +1,33 @@
 package com;
 
-import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Bot extends TelegramLongPollingBot {
+
+    DatabaseClient databaseClient;
+
+    public Bot() {
+        databaseClient = new DatabaseClient();
+    }
 
     public void sendMsg(Message message, String text) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
-        //sendMessage.setReplyToMessageId(message.getMessageId());
         sendMessage.setText(text);
         try {
             setButtons(sendMessage);
-//            sendMessage(sendMessage);
             execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
@@ -37,20 +39,14 @@ public class Bot extends TelegramLongPollingBot {
         if (message != null && message.hasText()) {
             switch (message.getText()) {
                 case "/start":
-                    sendMsg(message, "Вырубай нафик");
+                    sendMsg(message, "Балыбердин, Билалов, Демидов, Дроздов ИВТ-414, Сетевые технологии");
                     break;
-                case "Привет":
-                    sendMsg(message, "Привет!");
+                case "Добавить клиента":
+                    sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество)");
                     break;
-                case "привет":
-                    String msg;
-                    if (message.getFrom().getUserName().equals("sausageRoll") || message.getFrom().getUserName().equals("pepyachka"))
-                        msg = "Привет, сосунок";
-                    else
-                        msg = "Привет, " + message.getFrom().getFirstName();
-                    sendMsg(message, msg);
+                case "Показать всех клиентов":
                     break;
-                case "/help":
+                case "Выбрать клиента":
                     sendMsg(message, "Чем я могу помочь?");
                     break;
                 case "/settings":
@@ -67,7 +63,20 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message, sTime);
                     break;
                 default:
+                    isMatchName(message, message.getText());
             }
+        }
+    }
+
+    public boolean isMatchName(Message message, String msg) {
+        Pattern pattern = Pattern.compile("([А-ЯЁ][а-яё]+[\\-\\s]?){3,}");
+
+        Matcher matcher = pattern.matcher(msg);
+        if (matcher.find()) {
+            sendMsg(message, "Введите возраст клиента");
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -81,8 +90,9 @@ public class Bot extends TelegramLongPollingBot {
         List<KeyboardRow> keyboardRowList = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
 
-        keyboardFirstRow.add(new KeyboardButton("/help"));
-        keyboardFirstRow.add(new KeyboardButton("/settings"));
+        keyboardFirstRow.add(new KeyboardButton("Добавить клиента"));
+        keyboardFirstRow.add(new KeyboardButton("Показать всех клиентов"));
+        keyboardFirstRow.add(new KeyboardButton("Выбрать клиента"));
 
         keyboardRowList.add(keyboardFirstRow);
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
