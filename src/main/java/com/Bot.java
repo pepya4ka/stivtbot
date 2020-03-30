@@ -99,7 +99,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public boolean isMatchName(Message message, String msg) {
-        Pattern pattern = Pattern.compile("([А-ЯЁ][а-яё]+[\\-\\s]?){3,}");
+        Pattern pattern = Pattern.compile("([A-Z][a-z]+[\\-\\s]?){3,}");
 
         Matcher matcher = pattern.matcher(msg);
         if (matcher.find()) {
@@ -125,7 +125,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public boolean isMatchPlaceWork(Message message, String msg) {
-        Pattern pattern = Pattern.compile("^[А-Я]+$");
+        Pattern pattern = Pattern.compile("^[A-Z]+$");
 
         Matcher matcher = pattern.matcher(msg);
         if (matcher.find()) {
