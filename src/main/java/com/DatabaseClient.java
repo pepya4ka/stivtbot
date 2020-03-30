@@ -44,7 +44,8 @@ public class DatabaseClient {
     public String selectAllClient() {
         List<Person> personList = new ArrayList<>();
         Person tempPerson;
-        StringBuilder stringBuilder = new StringBuilder();;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Список клиентов:\n");
         try {
             connection = DriverManager.getConnection(connectionString, login, password);
             statement = connection.createStatement();
@@ -59,7 +60,6 @@ public class DatabaseClient {
                 personList.add(tempPerson);
             }
 
-            stringBuilder.append("Список клиентов:\n");
             for (Person temp : personList) {
                 stringBuilder.append(temp.getId());
                 stringBuilder.append(". ");
@@ -78,7 +78,7 @@ public class DatabaseClient {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             } finally {
-                return null;
+                return stringBuilder.toString();
             }
         }
     }
