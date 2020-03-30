@@ -83,7 +83,10 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public void showAllClient(Message message) {
-        List<Person> personList = databaseClient.selectAllClient();
+
+        //List<Person> personList = databaseClient.selectAllClient();
+        List<Person> personList = new ArrayList<>();
+        personList.addAll(databaseClient.selectAllClient());
         StringBuilder stringBuilder = new StringBuilder();
 
 
