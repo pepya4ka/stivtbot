@@ -21,11 +21,12 @@ public class DatabaseClient {
         connectToDB();
     }
 
-    public void addClient(Person person) {
+    public void addClient(Person person) {//Schema: heroku_b0fe3d77cdb9844
+
         try {
             connection = DriverManager.getConnection(connectionString, login, password);
             statement = connection.createStatement();
-            String query = "INSERT heroku_80379340d9d6f55.customers(name_customer, age_customer, work_place_customer) \n"
+            String query = "INSERT heroku_b0fe3d77cdb9844.customers(name_customer, age_customer, work_place_customer) \n"
                     + "VALUES ('" + person.getName() +"', '" + person.getAge() +"', '" + person.getPlaceWork() +"');";
             statement.executeUpdate(query);
         } catch (SQLException throwable) {
@@ -46,7 +47,7 @@ public class DatabaseClient {
         try {
             connection = DriverManager.getConnection(connectionString, login, password);
             statement = connection.createStatement();
-            String query = "SELECT * FROM heroku_80379340d9d6f55.customers";
+            String query = "SELECT * FROM heroku_b0fe3d77cdb9844.customers";
             resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 tempPerson = new Person();
