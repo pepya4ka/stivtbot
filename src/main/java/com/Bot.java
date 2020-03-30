@@ -1,5 +1,6 @@
 package com;
 
+import bank.Person;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -16,6 +17,7 @@ import java.util.regex.Pattern;
 public class Bot extends TelegramLongPollingBot {
 
     DatabaseClient databaseClient;
+    Person person;
 
     public Bot() {
         databaseClient = new DatabaseClient();
@@ -42,12 +44,13 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message, "Балыбердин, Билалов, Демидов, Дроздов ИВТ-414, Сетевые технологии");
                     break;
                 case "Добавить клиента":
-                    sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество)");
+                    person = new Person();
+                    sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество на английском языке)");
                     break;
                 case "Показать всех клиентов":
+                    showAllClient(message);
                     break;
                 case "Выбрать клиента":
-                    sendMsg(message, "Чем я могу помочь?");
                     break;
                 case "/settings":
                     sendMsg(message, "Что будем настраивать?");
@@ -64,8 +67,26 @@ public class Bot extends TelegramLongPollingBot {
                     break;
                 default:
                     isMatchName(message, message.getText());
+                    isMatchAge(message, message.getText());
+                    isMatchPlaceWork(message, message.getText());
             }
         }
+    }
+
+    public void showAllClient(Message message) {
+        List<Person> personList = databaseClient.selectAllClient();
+        StringBuilder stringBuilder = new StringBuilder();
+
+
+        stringBuilder.append("Список клиентов:\n");
+        for (Person temp : personList) {
+            stringBuilder.append(temp.getId());
+            stringBuilder.append(". ");
+            stringBuilder.append(temp.getName());
+            stringBuilder.append("\n");
+        }
+
+        sendMsg(message, stringBuilder.toString());
     }
 
     public boolean isMatchName(Message message, String msg) {
@@ -73,12 +94,42 @@ public class Bot extends TelegramLongPollingBot {
 
         Matcher matcher = pattern.matcher(msg);
         if (matcher.find()) {
-            sendMsg(message, "Введите возраст клиента");
+            person.setName(msg);
+            sendMsg(message, "Введите возраст клиента (18-99)");
             return true;
         } else {
+            sendMsg(message, "Неверно введены данные, попробуйте еще раз");
             return false;
         }
     }
+
+    public boolean isMatchAge(Message message, String msg) {
+        int age = Integer.parseInt(msg);
+        if ((age >= 18) && (age <= 99)) {
+            person.setAge(age);
+            sendMsg(message, "Введите место работы клиента (одним словом, заглавными буквами на английском языке)");
+            return true;
+        } else {
+            sendMsg(message, "Неверно введены данные, попробуйте еще раз");
+            return false;
+        }
+    }
+
+    public boolean isMatchPlaceWork(Message message, String msg) {
+        Pattern pattern = Pattern.compile("^[А-Я]+$");
+
+        Matcher matcher = pattern.matcher(msg);
+        if (matcher.find()) {
+            person.setPlaceWork(msg);
+            databaseClient.addClient(person);
+            sendMsg(message, "Клиент успешно добавлен");
+            return true;
+        } else {
+            sendMsg(message, "Неверно введены данные, попробуйте еще раз");
+            return false;
+        }
+    }
+
 
     public void setButtons(SendMessage sendMessage) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
