@@ -24,6 +24,7 @@ public class Bot extends TelegramLongPollingBot {
     private boolean flAdd = false;
     private boolean flName = false;
     private boolean flAge = false;
+    private boolean flWorkPlace = false;
 
     public Bot() {
         databaseClient = new DatabaseClient();
@@ -35,9 +36,10 @@ public class Bot extends TelegramLongPollingBot {
         this.flAccountMenu = flAccountMenu;
     }
 
-    private void setFlsNA(boolean flName, boolean flAge) {
+    private void setFlsNA(boolean flName, boolean flAge, boolean flWorkPlace) {
        this.flName = flName;
        this.flAge = flAge;
+       this.flWorkPlace = flWorkPlace;
     }
 
     public void sendMsg(Message message, String text) {
@@ -61,18 +63,18 @@ public class Bot extends TelegramLongPollingBot {
                 case "/start":
                     setFlsMenu(true, false, false);
                     flAdd = false;
-                    setFlsNA(false, false);
+                    setFlsNA(false, false, flWorkPlace);
                     sendMsg(message, "Балыбердин, Билалов, Демидов, Дроздов ИВТ-414, Сетевые технологии");
                     break;
                 case "Добавить клиента":
                     flAdd = true;
-                    setFlsNA(false, false);
+                    setFlsNA(false, false, flWorkPlace);
                     person = new Person();
                     sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество на английском языке)");
                     break;
                 case "Показать всех клиентов":
                     flAdd = false;
-                    setFlsNA(false, false);
+                    setFlsNA(false, false, flWorkPlace);
                     showAllClient(message);
                     break;
                 case "Выбрать клиента":
@@ -107,22 +109,24 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public boolean isMatchName(Message message, String msg) {
-        Pattern pattern = Pattern.compile("([A-Z][a-z]+[\\-\\s]?){3,}");
+        if (!flName && !flAge && !flWorkPlace) {
+            Pattern pattern = Pattern.compile("([A-Z][a-z]+[\\-\\s]?){3,}");
 
-        Matcher matcher = pattern.matcher(msg);
-        if (matcher.find()) {
-            person.setName(msg);
-            flName = true;
-            sendMsg(message, "Введите возраст клиента (18-99)");
-            return true;
-        } else {
-            sendMsg(message, "Неверно введены данные, попробуйте еще раз");
-            return false;
+            Matcher matcher = pattern.matcher(msg);
+            if (matcher.find()) {
+                person.setName(msg);
+                flName = true;
+                sendMsg(message, "Введите возраст клиента (18-99)");
+                return true;
+            } else {
+                sendMsg(message, "Неверно введены данные, попробуйте еще раз");
+                return false;
+            }
         }
     }
 
     public boolean isMatchAge(Message message, String msg) {
-        if (flName) {
+        if (flName && !flAge && !flWorkPlace) {
             int age = Integer.parseInt(msg);
             if ((age >= 18) && (age <= 99)) {
                 person.setAge(age);
@@ -138,7 +142,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public boolean isMatchPlaceWork(Message message, String msg) {
-        if (flAge) {
+        if (flName && flAge && !flWorkPlace) {
             Pattern pattern = Pattern.compile("^[A-Z]+$");
 
             Matcher matcher = pattern.matcher(msg);
