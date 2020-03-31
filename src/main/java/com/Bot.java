@@ -18,12 +18,19 @@ public class Bot extends TelegramLongPollingBot {
 
     DatabaseClient databaseClient;
     Person person;
-    private boolean flName = false;
-    private boolean flAge = false;
-    private boolean flPlaceWork = false;
+    private boolean flMainMenu = false;
+    private boolean flClientMenu = false;
+    private boolean flAccountMenu = false;
+    private boolean flAdd = false;
 
     public Bot() {
         databaseClient = new DatabaseClient();
+    }
+
+    private void setFls(boolean flMainMenu, boolean flClientMenu, boolean flAccountMenu) {
+        this.flMainMenu = flMainMenu;
+        this.flClientMenu = flClientMenu;
+        this.flAccountMenu = flAccountMenu;
     }
 
     public void sendMsg(Message message, String text) {
@@ -32,7 +39,8 @@ public class Bot extends TelegramLongPollingBot {
         sendMessage.setChatId(message.getChatId().toString());
         sendMessage.setText(text);
         try {
-            setButtons(sendMessage);
+            if (flMainMenu)
+                setButtonsMainMenu(sendMessage);
             execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
@@ -44,13 +52,16 @@ public class Bot extends TelegramLongPollingBot {
         if (message != null && message.hasText()) {
             switch (message.getText()) {
                 case "/start":
+                    setFls(true, false, false);
                     sendMsg(message, "Балыбердин, Билалов, Демидов, Дроздов ИВТ-414, Сетевые технологии");
                     break;
                 case "Добавить клиента":
+                    flAdd = true;
                     person = new Person();
                     sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество на английском языке)");
                     break;
                 case "Показать всех клиентов":
+                    flAdd = false;
                     showAllClient(message);
                     break;
                 case "Выбрать клиента":
@@ -69,23 +80,17 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message, sTime);
                     break;
                 default:
-                    if (!flName && !flAge && !flPlaceWork) {
-                        flName = isMatchName(message, message.getText());
+                    if (flAdd) {
+                        isMatchName(message, message.getText());
+                        isMatchAge(message, message.getText());
+                        isMatchPlaceWork(message, message.getText());
                     }
-                    if (flName && !flAge && !flPlaceWork) {
-                        flAge = isMatchAge(message, message.getText());
-                    }
-                    if (flName && flAge && !flPlaceWork) {
-                        flPlaceWork = isMatchPlaceWork(message, message.getText());
-                    }
-                    if (flPlaceWork)
-                        sendMsg(message, "Клиент успешно добавлен");
             }
         }
     }
 
     public void showAllClient(Message message) {
-        sendMsg(message,databaseClient.selectAllClient());
+        sendMsg(message, databaseClient.selectAllClient());
     }
 
     public boolean isMatchName(Message message, String msg) {
@@ -121,9 +126,7 @@ public class Bot extends TelegramLongPollingBot {
         if (matcher.find()) {
             person.setPlaceWork(msg);
             databaseClient.addClient(person);
-            flName = false;
-            flAge = false;
-            flPlaceWork = false;
+            flAdd = false;
             return true;
         } else {
             sendMsg(message, "Неверно введены данные, попробуйте еще раз");
@@ -132,7 +135,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
-    public void setButtons(SendMessage sendMessage) {
+    public void setButtonsMainMenu(SendMessage sendMessage) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
         replyKeyboardMarkup.setSelective(true);
