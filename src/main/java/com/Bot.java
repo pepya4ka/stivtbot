@@ -1,6 +1,7 @@
 package com;
 
 import bank.Person;
+import com.google.inject.internal.cglib.reflect.$FastMember;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -56,14 +57,28 @@ public class Bot extends TelegramLongPollingBot {
         sendMessage.setChatId(message.getChatId().toString());
         sendMessage.setText(text);
         try {
-            if (flMainMenu)
-                setButtonsMainMenu(sendMessage);
-            if (flClientMenu)
-                setButtonsClientMenu(sendMessage);
             execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+//        if (flMainMenu) {
+//            setButtonsMainMenu(sendMessage);
+//        }
+//        if (flClientMenu) {
+//            setButtonsClientMenu(sendMessage);
+//        }
+    }
+
+    private void mainMenu(Message message) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(message.getChatId().toString());
+        setButtonsMainMenu(sendMessage);
+    }
+
+    private void clientMenu(Message message) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(message.getChatId().toString());
+        setButtonsClientMenu(sendMessage);
     }
 
     public void onUpdateReceived(Update update) {
@@ -71,6 +86,7 @@ public class Bot extends TelegramLongPollingBot {
         if (message != null && message.hasText()) {
             switch (message.getText()) {
                 case "/start":
+                    mainMenu(message);
                     setFlsMenu(true, false, false);
                     setFlsAC(false, false);
                     setFlsNA(false, false, false);
@@ -92,7 +108,7 @@ public class Bot extends TelegramLongPollingBot {
                     setFlsNA(false, false, false);
                     sendMsg(message, "Пожалуйста, пришлите номер выбранного клиента");
                     break;
-                case "ok" :
+                case "ok":
                     emptyMethod();
                     break;
                 case "Вернуться назад":
@@ -134,15 +150,18 @@ public class Bot extends TelegramLongPollingBot {
     private void previousMenu(Message message) {
         if (!flAccountMenu) {
             setFlsMenu(false, true, false);
+            clientMenu(message);
         }
         if (!flClientMenu) {
             setFlsMenu(true, false, false);
+            mainMenu(message);
         }
         sendMsg(message, "Введите \"ok\"");
     }
 
     public void chooseClient(Message message) {
         sendMsg(message, "Выбран клиент с номер " + Integer.parseInt(message.getText()));
+        clientMenu(message);
 //        sendMsg(message, "Введите \"ok\"");
         if (databaseClient.selectClient(Integer.parseInt(message.getText())) != null) {
             setFlsMenu(false, true, false);
