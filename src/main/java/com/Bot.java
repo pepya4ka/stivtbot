@@ -129,7 +129,7 @@ public class Bot extends TelegramLongPollingBot {
 
     public void chooseClient(Message message) {
         sendMsg(message, "Выбран клиент с номер " + Integer.parseInt(message.getText()));
-        sendMsg(message, "Введите \"ok\"");
+//        sendMsg(message, "Введите \"ok\"");
         if (databaseClient.selectClient(Integer.parseInt(message.getText())) != null) {
             setFlsMenu(false, true, false);
             setFlsAC(false, false);
