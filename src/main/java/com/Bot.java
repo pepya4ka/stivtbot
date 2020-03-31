@@ -110,12 +110,11 @@ public class Bot extends TelegramLongPollingBot {
                         isMatchName(message, message.getText());
                         isMatchAge(message, message.getText());
                         isMatchPlaceWork(message, message.getText());
-                    } else {
-                        sendMsg(message, "Пожалуйста, выберите нужный пункт в меню!");
                     }
                     if (flChoose) {
                         chooseClient(message);
-                    } else {
+                    }
+                    if (!flAdd && !flChoose) {
                         sendMsg(message, "Пожалуйста, выберите нужный пункт в меню!");
                     }
             }
