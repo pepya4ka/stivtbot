@@ -33,7 +33,7 @@ public class Bot extends TelegramLongPollingBot {
         databaseClient = new DatabaseClient();
     }
 
-    protected void setFlsCA(boolean flAdd, boolean flChoose) {
+    protected void setFlsAC(boolean flAdd, boolean flChoose) {
         this.flAdd = flAdd;
         this.flChoose = flChoose;
     }
@@ -72,23 +72,23 @@ public class Bot extends TelegramLongPollingBot {
             switch (message.getText()) {
                 case "/start":
                     setFlsMenu(true, false, false);
-                    setFlsCA(false, false);
+                    setFlsAC(false, false);
                     setFlsNA(false, false, false);
                     sendMsg(message, "Балыбердин, Билалов, Демидов, Дроздов ИВТ-414, Сетевые технологии");
                     break;
                 case "Добавить клиента":
-                    setFlsCA(true, false);
+                    setFlsAC(true, false);
                     setFlsNA(false, false, false);
                     person = new Person();
                     sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество на английском языке)");
                     break;
                 case "Показать всех клиентов":
-                    setFlsCA(false, false);
+                    setFlsAC(false, false);
                     setFlsNA(false, false, false);
                     showAllClient(message);
                     break;
                 case "Выбрать клиента":
-                    setFlsCA(false, true);
+                    setFlsAC(false, true);
                     setFlsNA(false, false, false);
                     sendMsg(message, "Пожалуйста, пришлите номер выбранного клиента");
                     break;
@@ -123,14 +123,15 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public void chooseClient(Message message) {
+        sendMsg(message, "Выбран клиент с номер " + Integer.parseInt(message.getText()));
         if (databaseClient.selectClient(Integer.parseInt(message.getText())) != null) {
             setFlsMenu(false, true, false);
-            setFlsCA(false, false);
+            setFlsAC(false, false);
             return;
         } else {
             sendMsg(message, "Неверный номер клиента, попробуй еще раз");
             setFlsMenu(true, false, false);
-            setFlsCA(false, false);
+            setFlsAC(false, false);
         }
 
     }
