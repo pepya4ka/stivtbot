@@ -29,6 +29,8 @@ public class Bot extends TelegramLongPollingBot {
     private boolean flAge = false;
     protected boolean flWorkPlace = false;
 
+    private List<KeyboardRow> keyboardRowList;
+
     public Bot() {
         databaseClient = new DatabaseClient();
     }
@@ -132,10 +134,10 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private void previousMenu(Message message) {
-        if (!flAccountMenu) {
+        if (!flMainMenu && flAccountMenu) {
             setFlsMenu(false, true, false);
         }
-        if (!flClientMenu) {
+        if (flClientMenu && !flAccountMenu) {
             setFlsMenu(true, false, false);
         }
         sendMsg(message, "Введите \"ok\"");
@@ -223,7 +225,7 @@ public class Bot extends TelegramLongPollingBot {
         replyKeyboardMarkup.setResizeKeyboard(true);
         replyKeyboardMarkup.setOneTimeKeyboard(false);
 
-        List<KeyboardRow> keyboardRowList = new ArrayList<>();
+        keyboardRowList = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
 
         keyboardFirstRow.add(new KeyboardButton("Добавить клиента"));
@@ -241,11 +243,11 @@ public class Bot extends TelegramLongPollingBot {
         replyKeyboardMarkup.setResizeKeyboard(true);
         replyKeyboardMarkup.setOneTimeKeyboard(false);
 
-        List<KeyboardRow> keyboardRowList = new ArrayList<>();
+        keyboardRowList = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
         KeyboardRow keyboardSecondRow = new KeyboardRow();
 
-        keyboardFirstRow.add(new KeyboardButton("Редактироватьь клиента"));
+        keyboardFirstRow.add(new KeyboardButton("Редактировать клиента"));
         keyboardFirstRow.add(new KeyboardButton("Удалить клиента"));
         keyboardFirstRow.add(new KeyboardButton("Информация о счетах"));
         keyboardSecondRow.add(new KeyboardButton("Выбрать счет"));
