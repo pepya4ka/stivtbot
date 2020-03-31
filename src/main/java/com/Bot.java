@@ -22,6 +22,8 @@ public class Bot extends TelegramLongPollingBot {
     private boolean flClientMenu = false;
     private boolean flAccountMenu = false;
     private boolean flAdd = false;
+    private boolean flName = false;
+    private boolean flAge = false;
 
     public Bot() {
         databaseClient = new DatabaseClient();
@@ -84,6 +86,8 @@ public class Bot extends TelegramLongPollingBot {
                         isMatchName(message, message.getText());
                         isMatchAge(message, message.getText());
                         isMatchPlaceWork(message, message.getText());
+                    } else {
+                        sendMsg(message, "Пожалуйста, выберите нужный пункт в меню!");
                     }
             }
         }
@@ -99,6 +103,7 @@ public class Bot extends TelegramLongPollingBot {
         Matcher matcher = pattern.matcher(msg);
         if (matcher.find()) {
             person.setName(msg);
+            flName = true;
             sendMsg(message, "Введите возраст клиента (18-99)");
             return true;
         } else {
@@ -108,29 +113,36 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public boolean isMatchAge(Message message, String msg) {
-        int age = Integer.parseInt(msg);
-        if ((age >= 18) && (age <= 99)) {
-            person.setAge(age);
-            sendMsg(message, "Введите место работы клиента (одним словом, заглавными буквами на английском языке)");
-            return true;
-        } else {
-            sendMsg(message, "Неверно введены данные, попробуйте еще раз");
-            return false;
+        if (flName) {
+            int age = Integer.parseInt(msg);
+            if ((age >= 18) && (age <= 99)) {
+                person.setAge(age);
+                flAge = true;
+                sendMsg(message, "Введите место работы клиента (одним словом, заглавными буквами на английском языке)");
+                return true;
+            } else {
+                sendMsg(message, "Неверно введены данные, попробуйте еще раз");
+                return false;
+            }
         }
     }
 
     public boolean isMatchPlaceWork(Message message, String msg) {
-        Pattern pattern = Pattern.compile("^[A-Z]+$");
+        if (flAge) {
+            Pattern pattern = Pattern.compile("^[A-Z]+$");
 
-        Matcher matcher = pattern.matcher(msg);
-        if (matcher.find()) {
-            person.setPlaceWork(msg);
-            databaseClient.addClient(person);
-            flAdd = false;
-            return true;
-        } else {
-            sendMsg(message, "Неверно введены данные, попробуйте еще раз");
-            return false;
+            Matcher matcher = pattern.matcher(msg);
+            if (matcher.find()) {
+                person.setPlaceWork(msg);
+                flName = false;
+                flAge = false;
+                flAdd = false;
+                databaseClient.addClient(person);
+                return true;
+            } else {
+                sendMsg(message, "Неверно введены данные, попробуйте еще раз");
+                return false;
+            }
         }
     }
 
