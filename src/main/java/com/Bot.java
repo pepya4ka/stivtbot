@@ -18,6 +18,7 @@ public class Bot extends TelegramLongPollingBot {
 
     DatabaseClient databaseClient;
     Person person;
+    int choosePerson;
     private boolean flMainMenu = false;
     private boolean flClientMenu = false;
     private boolean flAccountMenu = false;
@@ -94,11 +95,14 @@ public class Bot extends TelegramLongPollingBot {
                     setFlsNA(false, false, false);
                     sendMsg(message, "Пожалуйста, пришлите номер выбранного клиента");
                     break;
-                case "ok" :
-                    emptyMethod();
-                    break;
                 case "Вернуться назад":
                     previousMenu(message);
+                    break;
+                case "Удалить клиента":
+                    deleteClient(message);
+                    break;
+                case "ok" :
+                    emptyMethod();
                     break;
                 case "/settings":
                     sendMsg(message, "Что будем настраивать?");
@@ -139,12 +143,19 @@ public class Bot extends TelegramLongPollingBot {
         }
         if (flClientMenu && !flAccountMenu) {
             setFlsMenu(true, false, false);
+            choosePerson = 0;
         }
-        sendMsg(message, "Введите \"ok\"");
+    }
+
+    public void deleteClient(Message message) {
+        databaseClient.deleteClient(choosePerson);
+        sendMsg(message, "Клиент удален");
+        previousMenu(message);
     }
 
     public void chooseClient(Message message) {
         sendMsg(message, "Выбран клиент с номер " + Integer.parseInt(message.getText()));
+        choosePerson = Integer.parseInt(message.getText());
 //        sendMsg(message, "Введите \"ok\"");
         if (databaseClient.selectClient(Integer.parseInt(message.getText())) != null) {
             setFlsMenu(false, true, false);

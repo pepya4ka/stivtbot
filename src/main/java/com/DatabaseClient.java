@@ -66,6 +66,16 @@ public class DatabaseClient {
         }
     }
 
+    public void deleteClient(int number) {
+        try {
+            connection = DriverManager.getConnection(connectionString, login, password);
+            statement = connection.createStatement();
+            String query = "DELETE FROM heroku_b0fe3d77cdb9844.customers WHERE id_customer = " + number;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
     public String selectAllClient() {
         List<Person> personList = new ArrayList<>();
         Person tempPerson;
