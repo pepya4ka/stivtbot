@@ -138,7 +138,7 @@ public class Bot extends TelegramLongPollingBot {
         if (!flClientMenu) {
             setFlsMenu(true, false, false);
         }
-        sendMsg(message, "Главное меню");
+        sendMsg(message, "Введите \"ok\"");
     }
 
     public void chooseClient(Message message) {
