@@ -102,6 +102,7 @@ public class Bot extends TelegramLongPollingBot {
                     deleteClient(message);
                     break;
                 case "ok":
+                    previousMenu(message);
                     emptyMethod();
                     break;
                 case "/settings":
@@ -150,7 +151,6 @@ public class Bot extends TelegramLongPollingBot {
     public void deleteClient(Message message) {
         databaseClient.deleteClient(choosePerson);
         sendMsg(message, "Клиент удален, введите \"ok\"");
-        previousMenu(message);
     }
 
     public void chooseClient(Message message) {
