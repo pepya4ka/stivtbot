@@ -95,6 +95,9 @@ public class Bot extends TelegramLongPollingBot {
                 case "ok" :
                     emptyMethod();
                     break;
+                case "Вернуться назад":
+                    previousMenu();
+                    break;
                 case "/settings":
                     sendMsg(message, "Что будем настраивать?");
                     break;
@@ -120,11 +123,21 @@ public class Bot extends TelegramLongPollingBot {
                     if (!flAdd && !flChoose) {
                         sendMsg(message, "Пожалуйста, выберите нужный пункт в меню!");
                     }
+                    break;
             }
         }
     }
 
     private void emptyMethod() {
+    }
+
+    private void previousMenu() {
+        if (!flAccountMenu) {
+            setFlsMenu(false, true, false);
+        }
+        if (!flClientMenu) {
+            setFlsMenu(true, false, false);
+        }
     }
 
     public void chooseClient(Message message) {
