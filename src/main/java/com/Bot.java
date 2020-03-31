@@ -29,10 +29,15 @@ public class Bot extends TelegramLongPollingBot {
         databaseClient = new DatabaseClient();
     }
 
-    private void setFls(boolean flMainMenu, boolean flClientMenu, boolean flAccountMenu) {
+    private void setFlsMenu(boolean flMainMenu, boolean flClientMenu, boolean flAccountMenu) {
         this.flMainMenu = flMainMenu;
         this.flClientMenu = flClientMenu;
         this.flAccountMenu = flAccountMenu;
+    }
+
+    private void setFlsNA(boolean flName, boolean flAge) {
+       this.flName = flName;
+       this.flAge = flAge;
     }
 
     public void sendMsg(Message message, String text) {
@@ -54,16 +59,20 @@ public class Bot extends TelegramLongPollingBot {
         if (message != null && message.hasText()) {
             switch (message.getText()) {
                 case "/start":
-                    setFls(true, false, false);
+                    setFlsMenu(true, false, false);
+                    flAdd = false;
+                    setFlsNA(false, false);
                     sendMsg(message, "Балыбердин, Билалов, Демидов, Дроздов ИВТ-414, Сетевые технологии");
                     break;
                 case "Добавить клиента":
                     flAdd = true;
+                    setFlsNA(false, false);
                     person = new Person();
                     sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество на английском языке)");
                     break;
                 case "Показать всех клиентов":
                     flAdd = false;
+                    setFlsNA(false, false);
                     showAllClient(message);
                     break;
                 case "Выбрать клиента":
