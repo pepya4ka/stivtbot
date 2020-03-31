@@ -124,7 +124,8 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(message, "Неверно введены данные, попробуйте еще раз");
                 return false;
             }
-        }
+        } else
+            return false;
     }
 
     public boolean isMatchPlaceWork(Message message, String msg) {
@@ -143,7 +144,8 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(message, "Неверно введены данные, попробуйте еще раз");
                 return false;
             }
-        }
+        } else
+            return false;
     }
 
 
