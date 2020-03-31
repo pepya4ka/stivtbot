@@ -92,6 +92,9 @@ public class Bot extends TelegramLongPollingBot {
                     setFlsNA(false, false, false);
                     sendMsg(message, "Пожалуйста, пришлите номер выбранного клиента");
                     break;
+                case "ok" :
+                    emptyMethod();
+                    break;
                 case "/settings":
                     sendMsg(message, "Что будем настраивать?");
                     break;
@@ -121,8 +124,12 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    private void emptyMethod() {
+    }
+
     public void chooseClient(Message message) {
         sendMsg(message, "Выбран клиент с номер " + Integer.parseInt(message.getText()));
+        sendMsg(message, "Введите \"ok\"");
         if (databaseClient.selectClient(Integer.parseInt(message.getText())) != null) {
             setFlsMenu(false, true, false);
             setFlsAC(false, false);
