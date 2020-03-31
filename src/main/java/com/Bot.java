@@ -101,7 +101,7 @@ public class Bot extends TelegramLongPollingBot {
                 case "Удалить клиента":
                     deleteClient(message);
                     break;
-                case "ok" :
+                case "ok":
                     emptyMethod();
                     break;
                 case "/settings":
@@ -149,7 +149,7 @@ public class Bot extends TelegramLongPollingBot {
 
     public void deleteClient(Message message) {
         databaseClient.deleteClient(choosePerson);
-        sendMsg(message, "Клиент удален");
+        sendMsg(message, "Клиент удален, введите \"ok\"");
         previousMenu(message);
     }
 
@@ -173,7 +173,7 @@ public class Bot extends TelegramLongPollingBot {
         sendMsg(message, databaseClient.selectAllClient());
     }
 
-    public boolean isMatchName(Message message, String msg) {
+    public void isMatchName(Message message, String msg) {
         if (!flName && !flAge && !flWorkPlace) {
             Pattern pattern = Pattern.compile("([A-Z][a-z]+[\\-\\s]?){3,}");
 
@@ -182,32 +182,26 @@ public class Bot extends TelegramLongPollingBot {
                 person.setName(msg);
                 flName = true;
                 sendMsg(message, "Введите возраст клиента (18-99)");
-                return true;
             } else {
                 sendMsg(message, "Неверно введены данные, попробуйте еще раз");
-                return false;
             }
-        } else
-            return false;
+        }
     }
 
-    public boolean isMatchAge(Message message, String msg) {
+    public void isMatchAge(Message message, String msg) {
         if (flName && !flAge && !flWorkPlace) {
             int age = Integer.parseInt(msg);
             if ((age >= 18) && (age <= 99)) {
                 person.setAge(age);
                 flAge = true;
                 sendMsg(message, "Введите место работы клиента (одним словом, заглавными буквами на английском языке)");
-                return true;
             } else {
                 sendMsg(message, "Неверно введены данные, попробуйте еще раз");
-                return false;
             }
-        } else
-            return false;
+        }
     }
 
-    public boolean isMatchPlaceWork(Message message, String msg) {
+    public void isMatchPlaceWork(Message message, String msg) {
         if (flName && flAge && !flWorkPlace) {
             Pattern pattern = Pattern.compile("^[A-Z]+$");
 
@@ -219,13 +213,10 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message, "Клиент добавлен");
                 else
                     sendMsg(message, "Что-то пошло не так, попробуйте еще раз!");
-                return true;
             } else {
                 sendMsg(message, "Неверно введены данные, попробуйте еще раз");
-                return false;
             }
-        } else
-            return false;
+        }
     }
 
 
