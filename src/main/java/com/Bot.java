@@ -37,9 +37,9 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private void setFlsNA(boolean flName, boolean flAge, boolean flWorkPlace) {
-       this.flName = flName;
-       this.flAge = flAge;
-       this.flWorkPlace = flWorkPlace;
+        this.flName = flName;
+        this.flAge = flAge;
+        this.flWorkPlace = flWorkPlace;
     }
 
     public void sendMsg(Message message, String text) {
@@ -122,7 +122,8 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(message, "Неверно введены данные, попробуйте еще раз");
                 return false;
             }
-        }
+        } else
+            return false;
     }
 
     public boolean isMatchAge(Message message, String msg) {
