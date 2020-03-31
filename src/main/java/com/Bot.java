@@ -24,7 +24,7 @@ public class Bot extends TelegramLongPollingBot {
     private boolean flAdd = false;
     private boolean flName = false;
     private boolean flAge = false;
-    private boolean flWorkPlace = false;
+    protected boolean flWorkPlace = false;
 
     public Bot() {
         databaseClient = new DatabaseClient();
@@ -36,7 +36,7 @@ public class Bot extends TelegramLongPollingBot {
         this.flAccountMenu = flAccountMenu;
     }
 
-    private void setFlsNA(boolean flName, boolean flAge, boolean flWorkPlace) {
+    protected void setFlsNA(boolean flName, boolean flAge, boolean flWorkPlace) {
         this.flName = flName;
         this.flAge = flAge;
         this.flWorkPlace = flWorkPlace;
@@ -68,13 +68,13 @@ public class Bot extends TelegramLongPollingBot {
                     break;
                 case "Добавить клиента":
                     flAdd = true;
-                    setFlsNA(false, false, flWorkPlace);
+                    setFlsNA(false, false, false);
                     person = new Person();
                     sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество на английском языке)");
                     break;
                 case "Показать всех клиентов":
                     flAdd = false;
-                    setFlsNA(false, false, flWorkPlace);
+                    setFlsNA(false, false, false);
                     showAllClient(message);
                     break;
                 case "Выбрать клиента":
@@ -149,10 +149,11 @@ public class Bot extends TelegramLongPollingBot {
             Matcher matcher = pattern.matcher(msg);
             if (matcher.find()) {
                 person.setPlaceWork(msg);
-                flName = false;
-                flAge = false;
                 flAdd = false;
-                databaseClient.addClient(person);
+                if (databaseClient.addClient(person, this))
+                    sendMsg(message, "Клиент добавлен");
+                else
+                    sendMsg(message, "Что-то пошло не так, попробуйте еще раз!");
                 return true;
             } else {
                 sendMsg(message, "Неверно введены данные, попробуйте еще раз");

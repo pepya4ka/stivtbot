@@ -21,8 +21,9 @@ public class DatabaseClient {
         connectToDB();
     }
 
-    public void addClient(Person person) {//Schema: heroku_b0fe3d77cdb9844
+    public boolean addClient(Person person, Bot bot) {//Schema: heroku_b0fe3d77cdb9844
 
+        bot.setFlsNA(false,false,true);
         try {
             connection = DriverManager.getConnection(connectionString, login, password);
             statement = connection.createStatement();
@@ -31,12 +32,15 @@ public class DatabaseClient {
             statement.executeUpdate(query);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            return false;
         } finally {
             try {
                 connection.close();
                 statement.close();
+                return true;
             } catch (SQLException throwable) {
                 throwable.printStackTrace();
+                return false;
             }
         }
     }
