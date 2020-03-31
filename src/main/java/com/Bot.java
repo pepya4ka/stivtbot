@@ -21,13 +21,21 @@ public class Bot extends TelegramLongPollingBot {
     private boolean flMainMenu = false;
     private boolean flClientMenu = false;
     private boolean flAccountMenu = false;
+
     private boolean flAdd = false;
+    private boolean flChoose = false;
+
     private boolean flName = false;
     private boolean flAge = false;
     protected boolean flWorkPlace = false;
 
     public Bot() {
         databaseClient = new DatabaseClient();
+    }
+
+    protected void setFlsCA(boolean flAdd, boolean flChoose) {
+        this.flAdd = flAdd;
+        this.flChoose = flChoose;
     }
 
     private void setFlsMenu(boolean flMainMenu, boolean flClientMenu, boolean flAccountMenu) {
@@ -50,6 +58,8 @@ public class Bot extends TelegramLongPollingBot {
         try {
             if (flMainMenu)
                 setButtonsMainMenu(sendMessage);
+            if (flClientMenu)
+                setButtonsClientMenu(sendMessage);
             execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
@@ -62,22 +72,25 @@ public class Bot extends TelegramLongPollingBot {
             switch (message.getText()) {
                 case "/start":
                     setFlsMenu(true, false, false);
-                    flAdd = false;
-                    setFlsNA(false, false, flWorkPlace);
+                    setFlsCA(false, false);
+                    setFlsNA(false, false, false);
                     sendMsg(message, "Балыбердин, Билалов, Демидов, Дроздов ИВТ-414, Сетевые технологии");
                     break;
                 case "Добавить клиента":
-                    flAdd = true;
+                    setFlsCA(true, false);
                     setFlsNA(false, false, false);
                     person = new Person();
                     sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество на английском языке)");
                     break;
                 case "Показать всех клиентов":
-                    flAdd = false;
+                    setFlsCA(false, false);
                     setFlsNA(false, false, false);
                     showAllClient(message);
                     break;
                 case "Выбрать клиента":
+                    setFlsCA(false, true);
+                    setFlsNA(false, false, false);
+                    sendMsg(message, "Пожалуйста, пришлите номер выбранного клиента");
                     break;
                 case "/settings":
                     sendMsg(message, "Что будем настраивать?");
@@ -89,7 +102,7 @@ public class Bot extends TelegramLongPollingBot {
                     break;
                 case "Скажи время":
                     GregorianCalendar gcalendar = new GregorianCalendar();
-                    String sTime = String.format("Текущее  время: " + gcalendar.get(Calendar.HOUR) + ":" + gcalendar.get(Calendar.MINUTE) + ":" + gcalendar.get(Calendar.SECOND));
+                    String sTime = "Текущее  время: " + gcalendar.get(Calendar.HOUR) + ":" + gcalendar.get(Calendar.MINUTE) + ":" + gcalendar.get(Calendar.SECOND);
                     sendMsg(message, sTime);
                     break;
                 default:
@@ -100,8 +113,26 @@ public class Bot extends TelegramLongPollingBot {
                     } else {
                         sendMsg(message, "Пожалуйста, выберите нужный пункт в меню!");
                     }
+                    if (flChoose) {
+                        chooseClient(message);
+                    } else {
+                        sendMsg(message, "Пожалуйста, выберите нужный пункт в меню!");
+                    }
             }
         }
+    }
+
+    public void chooseClient(Message message) {
+        if (databaseClient.selectClient(Integer.parseInt(message.getText())) != null) {
+            setFlsMenu(false, true, false);
+            setFlsCA(false, false);
+            return;
+        } else {
+            sendMsg(message, "Неверный номер клиента, попробуй еще раз");
+            setFlsMenu(true, false, false);
+            setFlsCA(false, false);
+        }
+
     }
 
     public void showAllClient(Message message) {
@@ -179,6 +210,29 @@ public class Bot extends TelegramLongPollingBot {
         keyboardFirstRow.add(new KeyboardButton("Выбрать клиента"));
 
         keyboardRowList.add(keyboardFirstRow);
+        replyKeyboardMarkup.setKeyboard(keyboardRowList);
+    }
+
+    public void setButtonsClientMenu(SendMessage sendMessage) {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
+
+        List<KeyboardRow> keyboardRowList = new ArrayList<>();
+        KeyboardRow keyboardFirstRow = new KeyboardRow();
+        KeyboardRow keyboardSecondRow = new KeyboardRow();
+
+        keyboardFirstRow.add(new KeyboardButton("Редактироватьь клиента"));
+        keyboardFirstRow.add(new KeyboardButton("Удалить клиента"));
+        keyboardFirstRow.add(new KeyboardButton("Информация о счетах"));
+        keyboardSecondRow.add(new KeyboardButton("Выбрать счет"));
+        keyboardSecondRow.add(new KeyboardButton("Открыть счет"));
+        keyboardSecondRow.add(new KeyboardButton("Вернуться назад"));
+
+        keyboardRowList.add(keyboardFirstRow);
+        keyboardRowList.add(keyboardSecondRow);
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
     }
 

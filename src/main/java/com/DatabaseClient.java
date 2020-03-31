@@ -45,6 +45,27 @@ public class DatabaseClient {
         }
     }
 
+    public Person selectClient(int number) {
+        Person tempPerson = null;
+        try {
+            connection = DriverManager.getConnection(connectionString, login, password);
+            statement = connection.createStatement();
+            String query = "SELECT * FROM heroku_b0fe3d77cdb9844.customers WHERE id_customer = " + number;
+            resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                tempPerson = new Person();
+                tempPerson.setId(resultSet.getInt(1));
+                tempPerson.setName(resultSet.getString(2));
+                tempPerson.setAge(resultSet.getInt(3));
+                tempPerson.setPlaceWork(resultSet.getString(4));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            return tempPerson;
+        }
+    }
+
     public String selectAllClient() {
         List<Person> personList = new ArrayList<>();
         Person tempPerson;
