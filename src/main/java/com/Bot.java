@@ -1,5 +1,6 @@
 package com;
 
+import bank.Account;
 import bank.Person;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -34,6 +35,9 @@ public class Bot extends TelegramLongPollingBot {
     private boolean flAge = false;
     protected boolean flWorkPlace = false;
 
+    private boolean flPlus = false;
+    private boolean flMinus = false;
+
     private List<KeyboardRow> keyboardRowList;
 
     public Bot() {
@@ -57,6 +61,11 @@ public class Bot extends TelegramLongPollingBot {
         this.flName = flName;
         this.flAge = flAge;
         this.flWorkPlace = flWorkPlace;
+    }
+
+    private void setPM(boolean flPlus, boolean flMinus) {
+        this.flPlus = flPlus;
+        this.flMinus = flMinus;
     }
 
     public void sendMsg(Message message, String text) {
@@ -85,6 +94,7 @@ public class Bot extends TelegramLongPollingBot {
                     setFlsMenu(true, false, false);
                     setFlsACEC(false, false, false, false);
                     setFlsNA(false, false, false);
+                    setPM(false, false);
                     sendMsg(message, "Балыбердин, Билалов, Демидов, Дроздов ИВТ-414, Сетевые технологии");
                     break;
                 case "Добавить клиента":
@@ -124,7 +134,12 @@ public class Bot extends TelegramLongPollingBot {
                     break;
                 case "Выбрать счет":
                     setFlsACEC(false, false, false, true);
+                    setPM(false, false);
                     sendMsg(message, "Пожалуйста, пришлите номер выбранного счета");
+                    break;
+                case "Вклад денег":
+                    setPM(true, false);
+                    sendMsg(message, "Пожалуйста, введите сумму, которую хотите положить на счет");
                     break;
                 case "Ok":
                     previousMenu(message);
@@ -144,6 +159,13 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message, sTime);
                     break;
                 default:
+                    if (flPlus) {
+                        Account account = databaseClient.selectAccount(chooseAccount, choosePerson);
+                        if (databaseClient.editCountPlus(chooseAccount, choosePerson, account, Integer.parseInt(message.toString())))
+                            sendMsg(message, "Счет пополнен");
+                        else
+                            sendMsg(message, "Что-то пошло не так, пожалуйста, попробуйте еще раз");
+                    }
                     if (flAdd) {
                         if (isMatchName(message, message.getText()))
                             break;
@@ -161,8 +183,9 @@ public class Bot extends TelegramLongPollingBot {
                             break;
                         if (isMatchEditAge(message))
                             break;
-                        if (isMatchEditPlaceWork(message))
+                        if (isMatchEditPlaceWork(message)) {
                             break;
+                        }
                     }
                     if (flChooseAccount) {
                         chooseAccount(message);

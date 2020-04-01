@@ -264,4 +264,26 @@ public class DatabaseClient {
         }
     }
 
+    public boolean editCountPlus(int chooseAccount, int chooseClient, Account account, int countPlus) {
+        try {
+            connection = DriverManager.getConnection(connectionString, login, password);
+            statement = connection.createStatement();
+            String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET count = \'" + (account.getCount() + countPlus) + "\', count_plus = "
+                    + (account.getCountPlus() + countPlus) + " WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
+            statement.executeUpdate(query);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+            return false;
+        } finally {
+            try {
+                connection.close();
+                statement.close();
+                return true;
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
+                return false;
+            }
+        }
+    }
+
 }

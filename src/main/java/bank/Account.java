@@ -8,7 +8,6 @@ public class Account {
     private int count;//текущий баланс
     private int countPlus;//приход
     private int countMinus;//расход
-    private Boolean closeOpen;//закрыт/открыт счет
     private StringBuilder history = new StringBuilder();
 
 
@@ -48,13 +47,6 @@ public class Account {
         this.countMinus = countMinus;
     }
 
-    public Boolean getCloseOpen() {
-        return closeOpen;
-    }
-
-    public void setCloseOpen(Boolean closeOpen) {
-        this.closeOpen = closeOpen;
-    }
 
     public String getHistory() {
         return history.toString();
