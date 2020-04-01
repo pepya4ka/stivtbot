@@ -242,4 +242,26 @@ public class DatabaseClient {
         }
     }
 
+    public Account selectAccount(int chooseAccount, int chooseClient) {
+        Account tempAccount = null;
+        try {
+            connection = DriverManager.getConnection(connectionString, login, password);
+            statement = connection.createStatement();
+            String query = "SELECT * FROM heroku_b0fe3d77cdb9844.accounts WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
+            resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                tempAccount = new Account();
+                tempAccount.setId(resultSet.getInt(1));
+                tempAccount.setCount(resultSet.getInt(3));
+                tempAccount.setCountPlus(resultSet.getInt(4));
+                tempAccount.setCountMinus(resultSet.getInt(5));
+                tempAccount.setHistory(resultSet.getString(6));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            return tempAccount;
+        }
+    }
+
 }

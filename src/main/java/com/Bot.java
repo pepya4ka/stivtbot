@@ -19,13 +19,16 @@ public class Bot extends TelegramLongPollingBot {
     DatabaseClient databaseClient;
     Person person;
     int choosePerson;
+    int chooseAccount;
+
     private boolean flMainMenu = false;
     private boolean flClientMenu = false;
     private boolean flAccountMenu = false;
 
     private boolean flAdd = false;
-    private boolean flChoose = false;
+    private boolean flChooseClient = false;
     private boolean flEdit = false;
+    private boolean flChooseAccount = false;
 
     private boolean flName = false;
     private boolean flAge = false;
@@ -37,10 +40,11 @@ public class Bot extends TelegramLongPollingBot {
         databaseClient = new DatabaseClient();
     }
 
-    protected void setFlsACE(boolean flAdd, boolean flChoose, boolean flEdit) {
+    protected void setFlsACEC(boolean flAdd, boolean flChoose, boolean flEdit, boolean flChooseAccount) {
         this.flAdd = flAdd;
-        this.flChoose = flChoose;
+        this.flChooseClient = flChoose;
         this.flEdit = flEdit;
+        this.flChooseAccount = flChooseAccount;
     }
 
     private void setFlsMenu(boolean flMainMenu, boolean flClientMenu, boolean flAccountMenu) {
@@ -77,23 +81,23 @@ public class Bot extends TelegramLongPollingBot {
             switch (message.getText()) {
                 case "/start":
                     setFlsMenu(true, false, false);
-                    setFlsACE(false, false, false);
+                    setFlsACEC(false, false, false, false);
                     setFlsNA(false, false, false);
                     sendMsg(message, "Балыбердин, Билалов, Демидов, Дроздов ИВТ-414, Сетевые технологии");
                     break;
                 case "Добавить клиента":
-                    setFlsACE(true, false, false);
+                    setFlsACEC(true, false, false, false);
                     setFlsNA(false, false, false);
                     person = new Person();
                     sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество транслитом)");
                     break;
                 case "Показать всех клиентов":
-                    setFlsACE(false, false, false);
+                    setFlsACEC(false, false, false, false);
                     setFlsNA(false, false, false);
                     showAllClient(message);
                     break;
                 case "Выбрать клиента":
-                    setFlsACE(false, true, false);
+                    setFlsACEC(false, true, false, false);
                     setFlsNA(false, false, false);
                     sendMsg(message, "Пожалуйста, пришлите номер выбранного клиента");
                     break;
@@ -104,7 +108,7 @@ public class Bot extends TelegramLongPollingBot {
                     deleteClient(message);
                     break;
                 case "Редактировать клиента":
-                    setFlsACE(false, false, true);
+                    setFlsACEC(false, false, true, false);
                     setFlsNA(false, false, false);
                     person = null;
                     person = databaseClient.selectClient(choosePerson);
@@ -115,6 +119,10 @@ public class Bot extends TelegramLongPollingBot {
                     break;
                 case "Информация о счетах":
                     sendMsg(message, databaseClient.selectAllAccount(choosePerson));
+                    break;
+                case "Выбрать счет":
+                    setFlsACEC(false, false, false, true);
+                    sendMsg(message, "Пожалуйста, пришлите номер выбранного счета");
                     break;
                 case "Ok":
                     previousMenu(message);
@@ -142,7 +150,7 @@ public class Bot extends TelegramLongPollingBot {
                         if (isMatchPlaceWork(message, message.getText()))
                             break;
                     }
-                    if (flChoose) {
+                    if (flChooseClient) {
                         chooseClient(message);
                         break;
                     }
@@ -154,7 +162,11 @@ public class Bot extends TelegramLongPollingBot {
                         if (isMatchEditPlaceWork(message))
                             break;
                     }
-                    if (!flAdd && !flChoose) {
+                    if (flChooseAccount) {
+                        chooseAccount(message);
+                        break;
+                    }
+                    if (!flAdd && !flChooseClient) {
                         sendMsg(message, "Пожалуйста, выберите нужный пункт в меню!");
                     }
                     break;
@@ -167,6 +179,7 @@ public class Bot extends TelegramLongPollingBot {
         if (!flMainMenu && flAccountMenu) {
             menu = "Меню клиента";
             setFlsMenu(false, true, false);
+            chooseAccount = 0;
         }
         if (flClientMenu && !flAccountMenu) {
             menu = "Главное меню";
@@ -188,12 +201,12 @@ public class Bot extends TelegramLongPollingBot {
 //        sendMsg(message, "Введите \"Ok\"");
         if (databaseClient.selectClient(Integer.parseInt(message.getText())) != null) {
             setFlsMenu(false, true, false);
-            setFlsACE(false, false, false);
-            sendMsg(message, "Выбран клиент с номер " + Integer.parseInt(message.getText()));
+            setFlsACEC(false, false, false, false);
+            sendMsg(message, "Выбран клиент с номером " + Integer.parseInt(message.getText()));
             return;
         } else {
             setFlsMenu(true, false, false);
-            setFlsACE(false, false, false);
+            setFlsACEC(false, false, false, false);
             sendMsg(message, "Неверный номер клиента, попробуй еще раз");
         }
 
@@ -347,13 +360,29 @@ public class Bot extends TelegramLongPollingBot {
             sendMsg(message, "Что-то пошло не так, пожалуйста повторите попытку");
     }
 
+    private void chooseAccount(Message message) {
+        chooseAccount = Integer.parseInt(message.getText());
+//        sendMsg(message, "Введите \"Ok\"");
+        if (databaseClient.selectAccount(chooseAccount, choosePerson) != null) {
+            setFlsMenu(false, false, true);
+            setFlsACEC(false, false, false, false);
+            sendMsg(message, "Выбран счет с номером " + Integer.parseInt(message.getText()));
+            return;
+        } else {
+            setFlsMenu(false, true, false);
+            setFlsACEC(false, false, false, false);
+            sendMsg(message, "Неверный номер счета, попробуй еще раз");
+        }
+
+    }
+
 
     public void setButtonsMainMenu(SendMessage sendMessage) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        sendMessage.setReplyMarkup(replyKeyboardMarkup);
         replyKeyboardMarkup.setSelective(true);
         replyKeyboardMarkup.setResizeKeyboard(true);
         replyKeyboardMarkup.setOneTimeKeyboard(false);
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
 
         keyboardRowList = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
@@ -391,6 +420,36 @@ public class Bot extends TelegramLongPollingBot {
         keyboardRowList.add(keyboardThirdRow);
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
     }
+
+    public void setButtonsAccountMenu(SendMessage sendMessage) {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
+
+        keyboardRowList = new ArrayList<>();
+        KeyboardRow keyboardFirstRow = new KeyboardRow();
+        KeyboardRow keyboardSecondRow = new KeyboardRow();
+        KeyboardRow keyboardThirdRow = new KeyboardRow();
+
+        keyboardFirstRow.add(new KeyboardButton("Закрыть счет"));
+        keyboardFirstRow.add(new KeyboardButton("Вклад денег"));
+        keyboardFirstRow.add(new KeyboardButton("Снятие денег"));
+        keyboardSecondRow.add(new KeyboardButton("Просмотр баланса"));
+        keyboardSecondRow.add(new KeyboardButton("Просмотр истории"));
+        keyboardSecondRow.add(new KeyboardButton("Вернуться назад"));
+        keyboardThirdRow.add(new KeyboardButton("Ok"));
+
+        keyboardRowList.add(keyboardFirstRow);
+        keyboardRowList.add(keyboardSecondRow);
+        keyboardRowList.add(keyboardThirdRow);
+        replyKeyboardMarkup.setKeyboard(keyboardRowList);
+    }
+
+//    private ReplyKeyboardMarkup getReplyKeyboardMarkup(SendMessage sendMessage) {
+//
+//    }
 
 
     public String getBotUsername() {
