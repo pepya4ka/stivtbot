@@ -101,7 +101,7 @@ public class Bot extends TelegramLongPollingBot {
                 case "Удалить клиента":
                     deleteClient(message);
                     break;
-                case "ok":
+                case "Ok":
                     previousMenu(message);
                     emptyMethod();
                     break;
@@ -154,14 +154,14 @@ public class Bot extends TelegramLongPollingBot {
 
     public void deleteClient(Message message) {
         databaseClient.deleteClient(choosePerson);
-        sendMsg(message, "Клиент удален");
-//        sendMsg(message, "Клиент удален, введите \"ok\"");
+//        sendMsg(message, "Клиент удален");
+        sendMsg(message, "Клиент удален, введите \"Ok\"");
     }
 
     public void chooseClient(Message message) {
         sendMsg(message, "Выбран клиент с номер " + Integer.parseInt(message.getText()));
         choosePerson = Integer.parseInt(message.getText());
-//        sendMsg(message, "Введите \"ok\"");
+//        sendMsg(message, "Введите \"Ok\"");
         if (databaseClient.selectClient(Integer.parseInt(message.getText())) != null) {
             setFlsMenu(false, true, false);
             setFlsAC(false, false);
@@ -253,6 +253,7 @@ public class Bot extends TelegramLongPollingBot {
         keyboardRowList = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
         KeyboardRow keyboardSecondRow = new KeyboardRow();
+        KeyboardRow keyboardThirdRow = new KeyboardRow();
 
         keyboardFirstRow.add(new KeyboardButton("Редактировать клиента"));
         keyboardFirstRow.add(new KeyboardButton("Удалить клиента"));
@@ -260,6 +261,7 @@ public class Bot extends TelegramLongPollingBot {
         keyboardSecondRow.add(new KeyboardButton("Выбрать счет"));
         keyboardSecondRow.add(new KeyboardButton("Открыть счет"));
         keyboardSecondRow.add(new KeyboardButton("Вернуться назад"));
+        keyboardThirdRow.add(new KeyboardButton("Ok"));
 
         keyboardRowList.add(keyboardFirstRow);
         keyboardRowList.add(keyboardSecondRow);
