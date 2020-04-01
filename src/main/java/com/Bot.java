@@ -110,6 +110,9 @@ public class Bot extends TelegramLongPollingBot {
                     person = databaseClient.selectClient(choosePerson);
                     sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество транслитом или \"-\", если нужно оставить без изменений)");
                     break;
+                case "Открыть новый счет":
+                    addAccount(message, choosePerson);
+                    break;
                 case "Ok":
                     previousMenu(message);
                     emptyMethod();
@@ -156,9 +159,6 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-    private void emptyMethod() {
-    }
-
     private void previousMenu(Message message) {
         String menu = "";
         if (!flMainMenu && flAccountMenu) {
@@ -172,6 +172,7 @@ public class Bot extends TelegramLongPollingBot {
         }
         sendMsg(message, menu);
     }
+
 
     public void deleteClient(Message message) {
         databaseClient.deleteClient(choosePerson);
@@ -336,6 +337,14 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
+    public void addAccount(Message message, int choosePerson) {
+        if (databaseClient.addAccount(choosePerson))
+            sendMsg(message, "Счет успешно добавлен");
+        else
+            sendMsg(message, "Что-то пошло не так, пожалуйста повторите попытку");
+    }
+
+
     public void setButtonsMainMenu(SendMessage sendMessage) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
@@ -380,11 +389,15 @@ public class Bot extends TelegramLongPollingBot {
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
     }
 
+
     public String getBotUsername() {
         return "st_ivt_bot";
     }
 
     public String getBotToken() {
         return "991573534:AAEcq5DR7BE9uGagnNT0p2IfgPfwAnlfhZY";
+    }
+
+    private void emptyMethod() {
     }
 }

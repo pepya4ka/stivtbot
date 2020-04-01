@@ -21,6 +21,34 @@ public class DatabaseClient {
         connectToDB();
     }
 
+    private void connectToDB() {
+        try {
+            Class.forName(driverName);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Can't get class. No driver found");
+            e.printStackTrace();
+            return;
+        }
+
+        connection = null;
+        try {
+            connection = DriverManager.getConnection(connectionString, login, password);
+        } catch (SQLException throwables) {
+            System.out.println("Can't get connection. Incorrect URL");
+            throwables.printStackTrace();
+            return;
+        }
+
+        try {
+            connection.close();
+        } catch (SQLException throwables) {
+            System.out.println("Can't close connection");
+            throwables.printStackTrace();
+            return;
+        }
+    }
+
+
     public boolean addClient(Person person, Bot bot) {//Schema: heroku_b0fe3d77cdb9844
 
         bot.setFlsNA(false,false,true);
@@ -147,30 +175,25 @@ public class DatabaseClient {
         }
     }
 
-    private void connectToDB() {
-        try {
-            Class.forName(driverName);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Can't get class. No driver found");
-            e.printStackTrace();
-            return;
-        }
 
-        connection = null;
+    public boolean addAccount(int chooseNumber) {
         try {
             connection = DriverManager.getConnection(connectionString, login, password);
-        } catch (SQLException throwables) {
-            System.out.println("Can't get connection. Incorrect URL");
-            throwables.printStackTrace();
-            return;
-        }
-
-        try {
-            connection.close();
-        } catch (SQLException throwables) {
-            System.out.println("Can't close connection");
-            throwables.printStackTrace();
-            return;
+            statement = connection.createStatement();
+            String query = "INSERT heroku_b0fe3d77cdb9844.accounts(id_customer, count, history) VALUES (" + chooseNumber + ", 350, \"\")";
+            statement.executeUpdate(query);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+            return false;
+        } finally {
+            try {
+                connection.close();
+                statement.close();
+                return true;
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
+                return false;
+            }
         }
     }
 
