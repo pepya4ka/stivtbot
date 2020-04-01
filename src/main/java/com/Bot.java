@@ -188,7 +188,7 @@ public class Bot extends TelegramLongPollingBot {
                 flName = true;
                 sendMsg(message, "Введите возраст клиента (18-99)");
             } else {
-                sendMsg(message, "Неверно введены данные, попробуйте еще раз");
+                sendMsg(message, "Неверно введены данные, попробуйте еще раз (NAME)");
             }
         }
     }
@@ -201,7 +201,7 @@ public class Bot extends TelegramLongPollingBot {
                 flAge = true;
                 sendMsg(message, "Введите место работы клиента (одним словом, заглавными буквами на английском языке)");
             } else {
-                sendMsg(message, "Неверно введены данные, попробуйте еще раз");
+                sendMsg(message, "Неверно введены данные, попробуйте еще раз (AGE)");
             }
         }
     }
@@ -219,7 +219,7 @@ public class Bot extends TelegramLongPollingBot {
                 else
                     sendMsg(message, "Что-то пошло не так, попробуйте еще раз!");
             } else {
-                sendMsg(message, "Неверно введены данные, попробуйте еще раз");
+                sendMsg(message, "Неверно введены данные, попробуйте еще раз (PW)");
             }
         }
     }
@@ -265,6 +265,7 @@ public class Bot extends TelegramLongPollingBot {
 
         keyboardRowList.add(keyboardFirstRow);
         keyboardRowList.add(keyboardSecondRow);
+        keyboardRowList.add(keyboardThirdRow);
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
     }
 
