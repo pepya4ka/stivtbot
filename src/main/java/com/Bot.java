@@ -129,6 +129,7 @@ public class Bot extends TelegramLongPollingBot {
                     }
                     if (flChoose) {
                         chooseClient(message);
+                        break;
                     }
                     if (!flAdd && !flChoose) {
                         sendMsg(message, "Пожалуйста, выберите нужный пункт в меню!");
