@@ -153,7 +153,7 @@ public class Bot extends TelegramLongPollingBot {
             setFlsMenu(true, false, false);
             choosePerson = 0;
         }
-        sendMsg(message, menu);
+        sendMsg(message, null);
     }
 
     public void deleteClient(Message message) {
@@ -171,9 +171,9 @@ public class Bot extends TelegramLongPollingBot {
             sendMsg(message, "Выбран клиент с номер " + Integer.parseInt(message.getText()));
             return;
         } else {
-            sendMsg(message, "Неверный номер клиента, попробуй еще раз");
             setFlsMenu(true, false, false);
             setFlsAC(false, false);
+            sendMsg(message, "Неверный номер клиента, попробуй еще раз");
         }
 
     }
@@ -224,8 +224,8 @@ public class Bot extends TelegramLongPollingBot {
             if (matcher.find()) {
                 person.setPlaceWork(msg);
                 if (databaseClient.addClient(person, this)) {
-                    sendMsg(message, "Клиент добавлен");
                     flAdd = false;
+                    sendMsg(message, "Клиент добавлен");
                     return true;
                 } else {
                     sendMsg(message, "Что-то пошло не так, попробуйте еще раз!");
