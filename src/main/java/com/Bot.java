@@ -104,7 +104,7 @@ public class Bot extends TelegramLongPollingBot {
                     deleteClient(message);
                     break;
                 case "Редактировать клиента":
-                    setFlsACE(false, true, true);
+                    setFlsACE(false, false, true);
                     setFlsNA(false, false, false);
                     person = null;
                     person = databaseClient.selectClient(choosePerson);
