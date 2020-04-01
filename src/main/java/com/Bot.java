@@ -178,15 +178,15 @@ public class Bot extends TelegramLongPollingBot {
 
     private void previousMenu(Message message) {
         String menu = "";
-        if (!flMainMenu && flAccountMenu) {
-            menu = "Меню клиента";
-            setFlsMenu(false, true, false);
-            chooseAccount = 0;
-        }
         if (flClientMenu && !flAccountMenu) {
             menu = "Главное меню";
             setFlsMenu(true, false, false);
             choosePerson = 0;
+        }
+        if (!flMainMenu && flAccountMenu) {
+            menu = "Меню клиента";
+            setFlsMenu(false, true, false);
+            chooseAccount = 0;
         }
         sendMsg(message, menu);
     }
