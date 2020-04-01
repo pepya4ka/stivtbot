@@ -203,6 +203,7 @@ public class DatabaseClient {
         Account tempAccount;
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Список счетов клиента " + chooseNumber + ":\n");
+        int fl = stringBuilder.length();//для проверки пустой строки stringBuilder (если в цикле ничего не запишется)
         try {
             connection = DriverManager.getConnection(connectionString, login, password);
             statement = connection.createStatement();
@@ -231,10 +232,11 @@ public class DatabaseClient {
                 connection.close();
                 statement.close();
                 resultSet.close();
-                return stringBuilder.toString();
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             } finally {
+                if (stringBuilder.length() == fl)
+                    stringBuilder.append("Пусто...");
                 return stringBuilder.toString();
             }
         }
