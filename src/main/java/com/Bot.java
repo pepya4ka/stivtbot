@@ -110,7 +110,7 @@ public class Bot extends TelegramLongPollingBot {
                     person = databaseClient.selectClient(choosePerson);
                     sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество транслитом или \"-\", если нужно оставить без изменений)");
                     break;
-                case "Открыть новый счет":
+                case "Открыть счет":
                     addAccount(message, choosePerson);
                     break;
                 case "Ok":
