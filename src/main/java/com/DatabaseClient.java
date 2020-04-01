@@ -1,5 +1,6 @@
 package com;
 
+import bank.Account;
 import bank.Person;
 
 import java.sql.*;
@@ -193,6 +194,48 @@ public class DatabaseClient {
             } catch (SQLException throwable) {
                 throwable.printStackTrace();
                 return false;
+            }
+        }
+    }
+
+    public String selectAllAccount(int chooseNumber) {
+        List<Account> accountList = new ArrayList<>();
+        Account tempAccount;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Список счетов клиента " + chooseNumber + ":\n");
+        try {
+            connection = DriverManager.getConnection(connectionString, login, password);
+            statement = connection.createStatement();
+            String query = "SELECT * FROM heroku_b0fe3d77cdb9844.accounts WHERE id_customer = " + chooseNumber;
+            resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                tempAccount = new Account();
+                tempAccount.setId(resultSet.getInt(1));
+                tempAccount.setCount(resultSet.getInt(3));
+                tempAccount.setCountPlus(resultSet.getInt(4));
+                tempAccount.setCountMinus(resultSet.getInt(5));
+                tempAccount.setHistory(resultSet.getString(6));
+                accountList.add(tempAccount);
+            }
+
+            for (Account temp : accountList) {
+                stringBuilder.append(temp.getId());
+                stringBuilder.append(". Баланс ");
+                stringBuilder.append(temp.getCount());
+                stringBuilder.append("\n");
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            try {
+                connection.close();
+                statement.close();
+                resultSet.close();
+                return stringBuilder.toString();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } finally {
+                return stringBuilder.toString();
             }
         }
     }

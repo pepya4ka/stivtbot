@@ -113,6 +113,9 @@ public class Bot extends TelegramLongPollingBot {
                 case "Открыть счет":
                     addAccount(message, choosePerson);
                     break;
+                case "Информация о счетах":
+                    sendMsg(message, databaseClient.selectAllAccount(choosePerson));
+                    break;
                 case "Ok":
                     previousMenu(message);
                     emptyMethod();
