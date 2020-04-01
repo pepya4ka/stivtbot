@@ -120,9 +120,12 @@ public class Bot extends TelegramLongPollingBot {
                     break;
                 default:
                     if (flAdd) {
-                        isMatchName(message, message.getText());
-                        isMatchAge(message, message.getText());
-                        isMatchPlaceWork(message, message.getText());
+                        if (isMatchName(message, message.getText()))
+                            break;
+                        if (isMatchAge(message, message.getText()))
+                            break;
+                        if (isMatchPlaceWork(message, message.getText()))
+                            break;
                     }
                     if (flChoose) {
                         chooseClient(message);
@@ -178,7 +181,7 @@ public class Bot extends TelegramLongPollingBot {
         sendMsg(message, databaseClient.selectAllClient());
     }
 
-    public void isMatchName(Message message, String msg) {
+    public boolean isMatchName(Message message, String msg) {
         if (!flName && !flAge && !flWorkPlace) {
             Pattern pattern = Pattern.compile("([A-Z][a-z]+[\\-\\s]?){3,}");
 
@@ -187,41 +190,52 @@ public class Bot extends TelegramLongPollingBot {
                 person.setName(msg);
                 flName = true;
                 sendMsg(message, "Введите возраст клиента (18-99)");
+                return true;
             } else {
                 sendMsg(message, "Неверно введены данные, попробуйте еще раз (NAME)");
+                return false;
             }
         }
+        return false;
     }
 
-    public void isMatchAge(Message message, String msg) {
+    public boolean isMatchAge(Message message, String msg) {
         if (flName && !flAge && !flWorkPlace) {
             int age = Integer.parseInt(msg);
             if ((age >= 18) && (age <= 99)) {
                 person.setAge(age);
                 flAge = true;
                 sendMsg(message, "Введите место работы клиента (одним словом, заглавными буквами на английском языке)");
+                return true;
             } else {
                 sendMsg(message, "Неверно введены данные, попробуйте еще раз (AGE)");
+                return false;
             }
         }
+        return false;
     }
 
-    public void isMatchPlaceWork(Message message, String msg) {
+    public boolean isMatchPlaceWork(Message message, String msg) {
         if (flName && flAge && !flWorkPlace) {
             Pattern pattern = Pattern.compile("^[A-Z]+$");
 
             Matcher matcher = pattern.matcher(msg);
             if (matcher.find()) {
                 person.setPlaceWork(msg);
-                flAdd = false;
-                if (databaseClient.addClient(person, this))
+                if (databaseClient.addClient(person, this)) {
                     sendMsg(message, "Клиент добавлен");
-                else
+                    flAdd = false;
+                    return true;
+                } else {
                     sendMsg(message, "Что-то пошло не так, попробуйте еще раз!");
+                    return false;
+                }
             } else {
                 sendMsg(message, "Неверно введены данные, попробуйте еще раз (PW)");
+                return false;
             }
         }
+        return false;
     }
 
 
