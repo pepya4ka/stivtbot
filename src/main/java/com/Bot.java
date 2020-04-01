@@ -161,10 +161,14 @@ public class Bot extends TelegramLongPollingBot {
                 default:
                     if (flPlus) {
                         Account account = databaseClient.selectAccount(chooseAccount, choosePerson);
-                        if (databaseClient.editCountPlus(chooseAccount, choosePerson, account, Integer.parseInt(message.toString())))
+                        if (databaseClient.editCountPlus(chooseAccount, choosePerson, account, Integer.parseInt(message.toString()))) {
+                            setPM(false, false);
                             sendMsg(message, "Счет пополнен");
-                        else
+                        }
+                        else {
+                            setPM(false, false);
                             sendMsg(message, "Что-то пошло не так, пожалуйста, попробуйте еще раз");
+                        }
                     }
                     if (flAdd) {
                         if (isMatchName(message, message.getText()))
