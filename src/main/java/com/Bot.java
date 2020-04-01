@@ -153,7 +153,7 @@ public class Bot extends TelegramLongPollingBot {
             setFlsMenu(true, false, false);
             choosePerson = 0;
         }
-        sendMsg(message, null);
+        sendMsg(message, menu);
     }
 
     public void deleteClient(Message message) {
