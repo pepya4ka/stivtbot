@@ -139,10 +139,13 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private void previousMenu(Message message) {
+        String menu;
         if (!flMainMenu && flAccountMenu) {
+            menu = "Меню клиента";
             setFlsMenu(false, true, false);
         }
         if (flClientMenu && !flAccountMenu) {
+            menu = "Главное меню";
             setFlsMenu(true, false, false);
             choosePerson = 0;
         }
@@ -150,7 +153,8 @@ public class Bot extends TelegramLongPollingBot {
 
     public void deleteClient(Message message) {
         databaseClient.deleteClient(choosePerson);
-        sendMsg(message, "Клиент удален, введите \"ok\"");
+        sendMsg(message, "Клиент удален");
+//        sendMsg(message, "Клиент удален, введите \"ok\"");
     }
 
     public void chooseClient(Message message) {

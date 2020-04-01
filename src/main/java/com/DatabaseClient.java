@@ -71,6 +71,7 @@ public class DatabaseClient {
             connection = DriverManager.getConnection(connectionString, login, password);
             statement = connection.createStatement();
             String query = "DELETE FROM heroku_b0fe3d77cdb9844.customers WHERE id_customer = " + number;
+            statement.executeQuery(query);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
