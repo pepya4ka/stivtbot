@@ -163,12 +163,12 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public void chooseClient(Message message) {
-        sendMsg(message, "Выбран клиент с номер " + Integer.parseInt(message.getText()));
         choosePerson = Integer.parseInt(message.getText());
 //        sendMsg(message, "Введите \"Ok\"");
         if (databaseClient.selectClient(Integer.parseInt(message.getText())) != null) {
             setFlsMenu(false, true, false);
             setFlsAC(false, false);
+            sendMsg(message, "Выбран клиент с номер " + Integer.parseInt(message.getText()));
             return;
         } else {
             sendMsg(message, "Неверный номер клиента, попробуй еще раз");
