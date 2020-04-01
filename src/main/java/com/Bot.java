@@ -69,6 +69,8 @@ public class Bot extends TelegramLongPollingBot {
                 setButtonsMainMenu(sendMessage);
             if (flClientMenu)
                 setButtonsClientMenu(sendMessage);
+            if (flAccountMenu)
+                setButtonsAccountMenu(sendMessage);
             execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
@@ -377,6 +379,15 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
+    private ReplyKeyboardMarkup getReplyKeyboardMarkup(SendMessage sendMessage) {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
+        return replyKeyboardMarkup;
+    }
+
     public void setButtonsMainMenu(SendMessage sendMessage) {
         ReplyKeyboardMarkup replyKeyboardMarkup = getReplyKeyboardMarkup(sendMessage);
 
@@ -392,11 +403,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public void setButtonsClientMenu(SendMessage sendMessage) {
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        sendMessage.setReplyMarkup(replyKeyboardMarkup);
-        replyKeyboardMarkup.setSelective(true);
-        replyKeyboardMarkup.setResizeKeyboard(true);
-        replyKeyboardMarkup.setOneTimeKeyboard(false);
+        ReplyKeyboardMarkup replyKeyboardMarkup = getReplyKeyboardMarkup(sendMessage);
 
         keyboardRowList = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
@@ -438,15 +445,6 @@ public class Bot extends TelegramLongPollingBot {
         keyboardRowList.add(keyboardSecondRow);
         keyboardRowList.add(keyboardThirdRow);
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
-    }
-
-    private ReplyKeyboardMarkup getReplyKeyboardMarkup(SendMessage sendMessage) {
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        sendMessage.setReplyMarkup(replyKeyboardMarkup);
-        replyKeyboardMarkup.setSelective(true);
-        replyKeyboardMarkup.setResizeKeyboard(true);
-        replyKeyboardMarkup.setOneTimeKeyboard(false);
-        return replyKeyboardMarkup;
     }
 
 
