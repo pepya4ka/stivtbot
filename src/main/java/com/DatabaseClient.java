@@ -45,6 +45,28 @@ public class DatabaseClient {
         }
     }
 
+    public boolean editClient(Person person) {
+        try {
+            connection = DriverManager.getConnection(connectionString, login, password);
+            statement = connection.createStatement();
+            String query = "UPDATE heroku_b0fe3d77cdb9844.customers SET name_customer = \'" + person.getName() + "\', age_customer = "
+                    + person.getAge() + ", work_place_customer = \'" + person.getPlaceWork() + "\'";
+            statement.executeUpdate(query);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+            return false;
+        } finally {
+            try {
+                connection.close();
+                statement.close();
+                return true;
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
+                return false;
+            }
+        }
+    }
+
     public Person selectClient(int number) {
         Person tempPerson = null;
         try {

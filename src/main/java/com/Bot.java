@@ -25,6 +25,7 @@ public class Bot extends TelegramLongPollingBot {
 
     private boolean flAdd = false;
     private boolean flChoose = false;
+    private boolean flEdit = false;
 
     private boolean flName = false;
     private boolean flAge = false;
@@ -36,9 +37,10 @@ public class Bot extends TelegramLongPollingBot {
         databaseClient = new DatabaseClient();
     }
 
-    protected void setFlsAC(boolean flAdd, boolean flChoose) {
+    protected void setFlsACE(boolean flAdd, boolean flChoose, boolean flEdit) {
         this.flAdd = flAdd;
         this.flChoose = flChoose;
+        this.flEdit = flEdit;
     }
 
     private void setFlsMenu(boolean flMainMenu, boolean flClientMenu, boolean flAccountMenu) {
@@ -75,23 +77,23 @@ public class Bot extends TelegramLongPollingBot {
             switch (message.getText()) {
                 case "/start":
                     setFlsMenu(true, false, false);
-                    setFlsAC(false, false);
+                    setFlsACE(false, false, false);
                     setFlsNA(false, false, false);
                     sendMsg(message, "Балыбердин, Билалов, Демидов, Дроздов ИВТ-414, Сетевые технологии");
                     break;
                 case "Добавить клиента":
-                    setFlsAC(true, false);
+                    setFlsACE(true, false, false);
                     setFlsNA(false, false, false);
                     person = new Person();
-                    sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество на английском языке)");
+                    sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество транслитом)");
                     break;
                 case "Показать всех клиентов":
-                    setFlsAC(false, false);
+                    setFlsACE(false, false, false);
                     setFlsNA(false, false, false);
                     showAllClient(message);
                     break;
                 case "Выбрать клиента":
-                    setFlsAC(false, true);
+                    setFlsACE(false, true, false);
                     setFlsNA(false, false, false);
                     sendMsg(message, "Пожалуйста, пришлите номер выбранного клиента");
                     break;
@@ -100,6 +102,13 @@ public class Bot extends TelegramLongPollingBot {
                     break;
                 case "Удалить клиента":
                     deleteClient(message);
+                    break;
+                case "Редактировать клиента":
+                    setFlsACE(false, true, true);
+                    setFlsNA(false, false, false);
+                    person = null;
+                    person = databaseClient.selectClient(choosePerson);
+                    sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество транслитом или \"-\", если нужно оставить без изменений)");
                     break;
                 case "Ok":
                     previousMenu(message);
@@ -130,6 +139,14 @@ public class Bot extends TelegramLongPollingBot {
                     if (flChoose) {
                         chooseClient(message);
                         break;
+                    }
+                    if (flEdit) {
+                        if (isMatchEditName(message))
+                            break;
+                        if (isMatchEditAge(message))
+                            break;
+                        if (isMatchEditPlaceWork(message))
+                            break;
                     }
                     if (!flAdd && !flChoose) {
                         sendMsg(message, "Пожалуйста, выберите нужный пункт в меню!");
@@ -167,12 +184,12 @@ public class Bot extends TelegramLongPollingBot {
 //        sendMsg(message, "Введите \"Ok\"");
         if (databaseClient.selectClient(Integer.parseInt(message.getText())) != null) {
             setFlsMenu(false, true, false);
-            setFlsAC(false, false);
+            setFlsACE(false, false, false);
             sendMsg(message, "Выбран клиент с номер " + Integer.parseInt(message.getText()));
             return;
         } else {
             setFlsMenu(true, false, false);
-            setFlsAC(false, false);
+            setFlsACE(false, false, false);
             sendMsg(message, "Неверный номер клиента, попробуй еще раз");
         }
 
@@ -185,7 +202,6 @@ public class Bot extends TelegramLongPollingBot {
     public boolean isMatchName(Message message, String msg) {
         if (!flName && !flAge && !flWorkPlace) {
             Pattern pattern = Pattern.compile("([A-Z][a-z]+[\\-\\s]?){3,}");
-
             Matcher matcher = pattern.matcher(msg);
             if (matcher.find()) {
                 person.setName(msg);
@@ -200,13 +216,33 @@ public class Bot extends TelegramLongPollingBot {
         return false;
     }
 
+    public boolean isMatchEditName(Message message) {
+        if (!flName && !flAge && !flWorkPlace) {
+            if (!message.getText().equals("-")) {
+                Pattern pattern = Pattern.compile("([A-Z][a-z]+[\\-\\s]?){3,}");
+                Matcher matcher = pattern.matcher(message.getText());
+                if (matcher.find()) {
+                    person.setName(message.getText());
+                    flName = true;
+                    sendMsg(message, "Введите возраст клиента (18-99 или \"-\", если нужно оставить без изменений");
+                    return true;
+                } else {
+                    sendMsg(message, "Неверно введены данные, попробуйте еще раз (NAME)");
+                    return false;
+                }
+            } else {
+                flName = true;
+                sendMsg(message, "Введите возраст клиента (18-99 или \"-\", если нужно оставить без изменений");
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isMatchAge(Message message, String msg) {
         if (flName && !flAge && !flWorkPlace) {
-            int age = Integer.parseInt(msg);
-            if ((age >= 18) && (age <= 99)) {
-                person.setAge(age);
-                flAge = true;
-                sendMsg(message, "Введите место работы клиента (одним словом, заглавными буквами на английском языке)");
+            if (matchAge(message)) {
+                sendMsg(message, "Введите место работы клиента (одним словом, заглавными буквами транслитом");
                 return true;
             } else {
                 sendMsg(message, "Неверно введены данные, попробуйте еще раз (AGE)");
@@ -214,6 +250,36 @@ public class Bot extends TelegramLongPollingBot {
             }
         }
         return false;
+    }
+
+    public boolean isMatchEditAge(Message message) {
+        if (flName && !flAge && !flWorkPlace) {
+            if (!message.getText().equals("-")) {
+                if (matchAge(message)) {
+                    sendMsg(message, "Введите место работы клиента (одним словом, заглавными буквами транслитом или \"-\", если нужно оставить без изменений)");
+                    return true;
+                } else {
+                    sendMsg(message, "Неверно введены данные, попробуйте еще раз (AGE)");
+                    return false;
+                }
+            } else {
+                flAge = true;
+                sendMsg(message, "Введите место работы клиента (одним словом, заглавными буквами транслитом или \"-\", если нужно оставить без изменений)");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean matchAge(Message message) {
+        int age = Integer.parseInt(message.getText());
+        if ((age >= 18) && (age <= 99)) {
+            person.setAge(age);
+            flAge = true;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean isMatchPlaceWork(Message message, String msg) {
@@ -234,6 +300,34 @@ public class Bot extends TelegramLongPollingBot {
             } else {
                 sendMsg(message, "Неверно введены данные, попробуйте еще раз (PW)");
                 return false;
+            }
+        }
+        return false;
+    }
+
+    public boolean isMatchEditPlaceWork(Message message) {
+        if (flName && flAge && !flWorkPlace) {
+            if (!message.getText().equals("-")) {
+                Pattern pattern = Pattern.compile("^[A-Z]+$");
+                Matcher matcher = pattern.matcher(message.getText());
+                if (matcher.find()) {
+                    person.setPlaceWork(message.getText());
+                    if (databaseClient.editClient(person)) {
+                        flEdit = false;
+                        sendMsg(message, "Данные клиента обновлены");
+                        return true;
+                    } else {
+                        sendMsg(message, "Что-то пошло не так, попробуйте еще раз!");
+                        return false;
+                    }
+                } else {
+                    sendMsg(message, "Неверно введены данные, попробуйте еще раз (PW)");
+                    return false;
+                }
+            } else {
+                flEdit = false;
+                sendMsg(message, "Данные клиента обновлены");
+                return true;
             }
         }
         return false;
