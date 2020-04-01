@@ -312,25 +312,27 @@ public class Bot extends TelegramLongPollingBot {
                 Matcher matcher = pattern.matcher(message.getText());
                 if (matcher.find()) {
                     person.setPlaceWork(message.getText());
-                    if (databaseClient.editClient(person)) {
-                        flEdit = false;
-                        sendMsg(message, "Данные клиента обновлены");
-                        return true;
-                    } else {
-                        sendMsg(message, "Что-то пошло не так, попробуйте еще раз!");
-                        return false;
-                    }
+                    return editClientDB(message, person);
                 } else {
                     sendMsg(message, "Неверно введены данные, попробуйте еще раз (PW)");
                     return false;
                 }
             } else {
-                flEdit = false;
-                sendMsg(message, "Данные клиента обновлены");
-                return true;
+                return editClientDB(message, person);
             }
         }
         return false;
+    }
+
+    private boolean editClientDB(Message message, Person person) {
+        if (databaseClient.editClient(person)) {
+            flEdit = false;
+            sendMsg(message, "Данные клиента обновлены");
+            return true;
+        } else {
+            sendMsg(message, "Что-то пошло не так, попробуйте еще раз!");
+            return false;
+        }
     }
 
 
