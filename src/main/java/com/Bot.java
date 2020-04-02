@@ -2,6 +2,8 @@ package com;
 
 import bank.Account;
 import bank.Person;
+import database.DatabaseAccount;
+import database.DatabaseClient;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -18,6 +20,7 @@ import java.util.regex.Pattern;
 public class Bot extends TelegramLongPollingBot {
 
     DatabaseClient databaseClient;
+    DatabaseAccount databaseAccount;
     Person person;
     int choosePerson;
     int chooseAccount;
@@ -42,6 +45,7 @@ public class Bot extends TelegramLongPollingBot {
 
     public Bot() {
         databaseClient = new DatabaseClient();
+        databaseAccount = new DatabaseAccount();
     }
 
     protected void setFlsACEC(boolean flAdd, boolean flChoose, boolean flEdit, boolean flChooseAccount) {
@@ -130,7 +134,7 @@ public class Bot extends TelegramLongPollingBot {
                     addAccount(message, choosePerson);
                     break;
                 case "Информация о счетах":
-                    sendMsg(message, databaseClient.selectAllAccount(choosePerson));
+                    sendMsg(message, databaseAccount.selectAllAccount(choosePerson));
                     break;
                 case "Выбрать счет":
                     setFlsACEC(false, false, false, true);
@@ -160,8 +164,8 @@ public class Bot extends TelegramLongPollingBot {
                     break;
                 default:
                     if (flPlus) {
-                        Account account = databaseClient.selectAccount(chooseAccount, choosePerson);
-                        if (databaseClient.editCountPlus(chooseAccount, choosePerson, account, Integer.parseInt(message.toString()))) {
+                        Account account = databaseAccount.selectAccount(chooseAccount, choosePerson);
+                        if (databaseAccount.editCountPlus(chooseAccount, choosePerson, account, Integer.parseInt(message.toString()))) {
                             setPM(false, false);
                             sendMsg(message, "Счет пополнен");
                         }
@@ -383,7 +387,7 @@ public class Bot extends TelegramLongPollingBot {
 
 
     public void addAccount(Message message, int choosePerson) {
-        if (databaseClient.addAccount(choosePerson))
+        if (databaseAccount.addAccount(choosePerson))
             sendMsg(message, "Счет успешно добавлен");
         else
             sendMsg(message, "Что-то пошло не так, пожалуйста повторите попытку");
@@ -392,7 +396,7 @@ public class Bot extends TelegramLongPollingBot {
     private void chooseAccount(Message message) {
         chooseAccount = Integer.parseInt(message.getText());
 //        sendMsg(message, "Введите \"Ok\"");
-        if (databaseClient.selectAccount(chooseAccount, choosePerson) != null) {
+        if (databaseAccount.selectAccount(chooseAccount, choosePerson) != null) {
             setFlsMenu(false, false, true);
             setFlsACEC(false, false, false, false);
             sendMsg(message, "Выбран счет с номером " + Integer.parseInt(message.getText()));
