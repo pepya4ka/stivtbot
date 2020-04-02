@@ -1,6 +1,7 @@
 package database;
 
 import bank.Account;
+import bank.Person;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -132,6 +133,51 @@ public class DatabaseAccount extends Database {
             } catch (SQLException throwable) {
                 throwable.printStackTrace();
                 return false;
+            }
+        }
+    }
+
+    public boolean isCheckAccountBills(int chooseNumber) { // проверка на наличие счетов у аккуанта
+        List<Account> accountList = new ArrayList<>();
+        Account tempAccount;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Список счетов клиента " + chooseNumber + ":\n");
+        int fl = stringBuilder.length();//для проверки пустой строки stringBuilder (если в цикле ничего не запишется)
+        try {
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
+            statement = connection.createStatement();
+            String query = "SELECT * FROM heroku_b0fe3d77cdb9844.accounts WHERE id_customer = " + chooseNumber;
+            resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                tempAccount = new Account();
+                tempAccount.setId(resultSet.getInt(1));
+                tempAccount.setCount(resultSet.getInt(3));
+                tempAccount.setCountPlus(resultSet.getInt(4));
+                tempAccount.setCountMinus(resultSet.getInt(5));
+                tempAccount.setHistory(resultSet.getString(6));
+                accountList.add(tempAccount);
+            }
+
+            for (Account temp : accountList) {
+                stringBuilder.append(temp.getId());
+                stringBuilder.append(". Баланс ");
+                stringBuilder.append(temp.getCount());
+                stringBuilder.append("\n");
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            try {
+                connection.close();
+                statement.close();
+                resultSet.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } finally {
+                if (stringBuilder.length() == fl)
+                    return false;
+                else
+                    return true;
             }
         }
     }

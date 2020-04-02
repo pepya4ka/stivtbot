@@ -97,50 +97,6 @@ public class DatabaseClient extends Database {
         }
     }
 
-    public boolean isCheckAccountBills(int number) { // проверка на наличие счетов у аккуанта
-        List<Person> personList = new ArrayList<>();
-        Person tempPerson;
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Список клиентов:\n");
-        int fl = stringBuilder.length();//для проверки пустой строки stringBuilder (если в цикле ничего не запишется)
-        try {
-            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
-            statement = connection.createStatement();
-            String query = "SELECT * FROM heroku_b0fe3d77cdb9844.customers WHERE id_customer = " + number;
-            resultSet = statement.executeQuery(query);
-            while (resultSet.next()) {
-                tempPerson = new Person();
-                tempPerson.setId(resultSet.getInt(1));
-                tempPerson.setName(resultSet.getString(2));
-                tempPerson.setAge(resultSet.getInt(3));
-                tempPerson.setPlaceWork(resultSet.getString(4));
-                personList.add(tempPerson);
-            }
-
-            for (Person temp : personList) {
-                stringBuilder.append(temp.getId());
-                stringBuilder.append(". ");
-                stringBuilder.append(temp.getName());
-                stringBuilder.append("\n");
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } finally {
-            try {
-                connection.close();
-                statement.close();
-                resultSet.close();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            } finally {
-                if (stringBuilder.length() == fl)
-                    return false;
-                else
-                    return true;
-            }
-        }
-    }
-
     public void deleteClient(int number) {
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
