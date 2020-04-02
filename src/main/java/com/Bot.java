@@ -213,6 +213,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private void previousMenu(Message message) {
+        setFlsACEC(false, false, false, false, false);
         String menu = "";
         if (flClientMenu && !flAccountMenu) {
             menu = "Главное меню";
@@ -235,7 +236,6 @@ public class Bot extends TelegramLongPollingBot {
         } else {
             databaseClient.deleteClient(choosePerson);
 //        sendMsg(message, "Клиент удален");
-            setFlsACEC(false, false, false, false, false);
             sendMsg(message, "Клиент удален, введите \"Ok\"");
         }
     }
