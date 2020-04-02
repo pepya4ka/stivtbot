@@ -4,6 +4,8 @@ import bank.Account;
 import bank.Person;
 import com.Bot;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ public class DatabaseClient extends Database {
     public boolean addClient(Person person, Bot bot) {//Schema: heroku_b0fe3d77cdb9844
 
         try {
-            connection = DriverManager.getConnection(getDriverName(), getLogin(), getPassword());
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
             String query = "INSERT heroku_b0fe3d77cdb9844.customers(name_customer, age_customer, work_place_customer) \n"
                     + "VALUES ('" + person.getName() +"', '" + person.getAge() +"', '" + person.getPlaceWork() +"');";
@@ -45,7 +47,7 @@ public class DatabaseClient extends Database {
 
     public boolean editClient(Person person) {
         try {
-            connection = DriverManager.getConnection(getDriverName(), getLogin(), getPassword());
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
             String query = "UPDATE heroku_b0fe3d77cdb9844.customers SET name_customer = \'" + person.getName() + "\', age_customer = "
                     + person.getAge() + ", work_place_customer = \'" + person.getPlaceWork() + "\' WHERE id_customer = " + person.getId();
@@ -68,7 +70,7 @@ public class DatabaseClient extends Database {
     public Person selectClient(int number) {
         Person tempPerson = null;
         try {
-            connection = DriverManager.getConnection(getDriverName(), getLogin(), getPassword());
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
             String query = "SELECT * FROM heroku_b0fe3d77cdb9844.customers WHERE id_customer = " + number;
             resultSet = statement.executeQuery(query);
@@ -97,7 +99,7 @@ public class DatabaseClient extends Database {
 
     public void deleteClient(int number) {
         try {
-            connection = DriverManager.getConnection(getDriverName(), getLogin(), getPassword());
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
             String query = "DELETE FROM heroku_b0fe3d77cdb9844.customers WHERE id_customer = " + number;
             statement.executeUpdate(query);
@@ -118,7 +120,7 @@ public class DatabaseClient extends Database {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Список клиентов:\n");
         try {
-            connection = DriverManager.getConnection(getDriverName(), getLogin(), getPassword());
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
             String query = "SELECT * FROM heroku_b0fe3d77cdb9844.customers";
             resultSet = statement.executeQuery(query);

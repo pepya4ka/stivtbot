@@ -39,10 +39,6 @@ public class Database {
         }
     }
 
-    public String getDriverName() {
-        return driverName;
-    }
-
     public String getConnectionString() {
         return connectionString;
     }
