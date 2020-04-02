@@ -3,6 +3,7 @@ package database;
 import bank.Account;
 import bank.Person;
 import com.Bot;
+import com.google.inject.internal.asm.$TypeReference;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -93,6 +94,25 @@ public class DatabaseClient extends Database {
                 throwables.printStackTrace();
             } finally {
                 return tempPerson;
+            }
+        }
+    }
+
+    public boolean isCheckAccountBills (int number) { // проверка на наличие счетов у аккуанта
+        try {
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
+            statement = connection.createStatement();
+            String query = "SELECT * FROM heroku_b0fe3d77cdb9844.customers WHERE id_customer = " + number;
+            resultSet = statement.executeQuery(query);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            try {
+                return resultSet.next();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } finally {
+                return true;
             }
         }
     }
