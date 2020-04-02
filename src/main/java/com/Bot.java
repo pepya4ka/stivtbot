@@ -33,6 +33,7 @@ public class Bot extends TelegramLongPollingBot {
     private boolean flChooseClient = false;
     private boolean flEdit = false;
     private boolean flChooseAccount = false;
+    private boolean flDel = false;
 
     private boolean flName = false;
     private boolean flAge = false;
@@ -48,11 +49,12 @@ public class Bot extends TelegramLongPollingBot {
         databaseAccount = new DatabaseAccount();
     }
 
-    protected void setFlsACEC(boolean flAdd, boolean flChoose, boolean flEdit, boolean flChooseAccount) {
+    protected void setFlsACEC(boolean flAdd, boolean flChoose, boolean flEdit, boolean flChooseAccount, boolean flDel) {
         this.flAdd = flAdd;
         this.flChooseClient = flChoose;
         this.flEdit = flEdit;
         this.flChooseAccount = flChooseAccount;
+        this.flDel = flDel;
     }
 
     private void setFlsMenu(boolean flMainMenu, boolean flClientMenu, boolean flAccountMenu) {
@@ -96,24 +98,24 @@ public class Bot extends TelegramLongPollingBot {
             switch (message.getText()) {
                 case "/start":
                     setFlsMenu(true, false, false);
-                    setFlsACEC(false, false, false, false);
+                    setFlsACEC(false, false, false, false, false);
                     setFlsNA(false, false, false);
                     setPM(false, false);
                     sendMsg(message, "Балыбердин, Билалов, Демидов, Дроздов ИВТ-414, Сетевые технологии");
                     break;
                 case "Добавить клиента":
-                    setFlsACEC(true, false, false, false);
+                    setFlsACEC(true, false, false, false, false);
                     setFlsNA(false, false, false);
                     person = new Person();
                     sendMsg(message, "Введите ФИО клиента (в формате Фамилия Имя Отчество транслитом)");
                     break;
                 case "Показать всех клиентов":
-                    setFlsACEC(false, false, false, false);
+                    setFlsACEC(false, false, false, false, false);
                     setFlsNA(false, false, false);
                     showAllClient(message);
                     break;
                 case "Выбрать клиента":
-                    setFlsACEC(false, true, false, false);
+                    setFlsACEC(false, true, false, false, false);
                     setFlsNA(false, false, false);
                     sendMsg(message, "Пожалуйста, пришлите номер выбранного клиента");
                     break;
@@ -121,10 +123,11 @@ public class Bot extends TelegramLongPollingBot {
                     previousMenu(message);
                     break;
                 case "Удалить клиента":
+                    setFlsACEC(false, false, false, false, true);
                     deleteClient(message);
                     break;
                 case "Редактировать клиента":
-                    setFlsACEC(false, false, true, false);
+                    setFlsACEC(false, false, true, false, false);
                     setFlsNA(false, false, false);
                     person = null;
                     person = databaseClient.selectClient(choosePerson);
@@ -137,7 +140,7 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message, databaseAccount.selectAllAccount(choosePerson));
                     break;
                 case "Выбрать счет":
-                    setFlsACEC(false, false, false, true);
+                    setFlsACEC(false, false, false, true, false);
                     setPM(false, false);
                     sendMsg(message, "Пожалуйста, пришлите номер выбранного счета");
                     break;
@@ -146,7 +149,9 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message, "Пожалуйста, введите сумму, которую хотите положить на счет");
                     break;
                 case "Ok":
-                    previousMenu(message);
+                    if (flDel) {
+                        previousMenu(message);
+                    }
                     emptyMethod();
                     break;
                 case "/settings":
