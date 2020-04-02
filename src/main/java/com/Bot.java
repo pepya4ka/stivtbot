@@ -22,6 +22,7 @@ public class Bot extends TelegramLongPollingBot {
     DatabaseClient databaseClient;
     DatabaseAccount databaseAccount;
     Person person;
+    Account account;
     int choosePerson;
     int chooseAccount;
 
@@ -170,7 +171,7 @@ public class Bot extends TelegramLongPollingBot {
                 default:
                     if (flPlus) {
                         sendMsg(message, "Обновление баланса...");
-                        Account account = databaseAccount.selectAccount(chooseAccount, choosePerson);
+                        account = databaseAccount.selectAccount(chooseAccount, choosePerson);
                         if (databaseAccount.editCountPlus(chooseAccount, account, Integer.parseInt(message.toString()))) {
                             setPM(false, false);
                             sendMsg(message, "Счет пополнен");
