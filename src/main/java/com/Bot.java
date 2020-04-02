@@ -239,12 +239,12 @@ public class Bot extends TelegramLongPollingBot {
 //        sendMsg(message, "Введите \"Ok\"");
         if (databaseClient.selectClient(Integer.parseInt(message.getText())) != null) {
             setFlsMenu(false, true, false);
-            setFlsACEC(false, false, false, false);
+            setFlsACEC(false, false, false, false, false);
             sendMsg(message, "Выбран клиент с номером " + Integer.parseInt(message.getText()));
             return;
         } else {
             setFlsMenu(true, false, false);
-            setFlsACEC(false, false, false, false);
+            setFlsACEC(false, false, false, false, false);
             sendMsg(message, "Неверный номер клиента, попробуй еще раз");
         }
 
@@ -403,12 +403,12 @@ public class Bot extends TelegramLongPollingBot {
 //        sendMsg(message, "Введите \"Ok\"");
         if (databaseAccount.selectAccount(chooseAccount, choosePerson) != null) {
             setFlsMenu(false, false, true);
-            setFlsACEC(false, false, false, false);
+            setFlsACEC(false, false, false, false, false);
             sendMsg(message, "Выбран счет с номером " + Integer.parseInt(message.getText()));
             return;
         } else {
             setFlsMenu(false, true, false);
-            setFlsACEC(false, false, false, false);
+            setFlsACEC(false, false, false, false, false);
             sendMsg(message, "Неверный номер счета, попробуй еще раз");
         }
 
