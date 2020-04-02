@@ -230,10 +230,12 @@ public class Bot extends TelegramLongPollingBot {
 
     public void deleteClient(Message message) {
         if (databaseAccount.isCheckAccountBills(choosePerson)) {
+            setFlsACEC(false, false, false, false, false);
             sendMsg(message, "Проверть клиента на наличие счетов, если они есть, то сначала закройте их!");
         } else {
             databaseClient.deleteClient(choosePerson);
 //        sendMsg(message, "Клиент удален");
+            setFlsACEC(false, false, false, false, false);
             sendMsg(message, "Клиент удален, введите \"Ok\"");
         }
     }
