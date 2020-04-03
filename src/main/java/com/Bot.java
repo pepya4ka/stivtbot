@@ -148,6 +148,7 @@ public class Bot extends TelegramLongPollingBot {
                 case "Вклад денег":
                     System.err.println("Вклад денег");
                     setPM(true, false);
+                    System.err.println("flPlus - " + flPlus);
                     sendMsg(message, "Пожалуйста, введите сумму, которую хотите положить на счет");
                     break;
                 case "Ok":
