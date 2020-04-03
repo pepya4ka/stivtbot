@@ -175,7 +175,7 @@ public class Bot extends TelegramLongPollingBot {
                     System.err.println("Default");
                     if (flPlus) {
                         System.err.println("Зашел в flPlus");
-                        String sum = message.toString();
+                        String sum = message.getText();
                         System.err.println("Сумма - " + sum);
                         account = databaseAccount.selectAccount(chooseAccount, choosePerson);
                         System.err.println("Аккаунт - " + account.getId());
