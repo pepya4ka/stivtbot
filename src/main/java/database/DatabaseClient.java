@@ -46,23 +46,25 @@ public class DatabaseClient extends Database {
     }
 
     public boolean editClient(Person person) {
+        boolean temp = false;
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
             String query = "UPDATE heroku_b0fe3d77cdb9844.customers SET name_customer = \'" + person.getName() + "\', age_customer = "
                     + person.getAge() + ", work_place_customer = \'" + person.getPlaceWork() + "\' WHERE id_customer = " + person.getId();
             statement.executeUpdate(query);
+            temp = true;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-            return false;
         } finally {
             try {
                 connection.close();
                 statement.close();
-                return true;
             } catch (SQLException throwable) {
                 throwable.printStackTrace();
-                return false;
+                temp = false;
+            } finally {
+                return temp;
             }
         }
     }

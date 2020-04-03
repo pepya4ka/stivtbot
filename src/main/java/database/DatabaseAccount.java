@@ -118,23 +118,25 @@ public class DatabaseAccount extends Database {
     public boolean editCountPlus(int chooseAccount, int choosePerson, Account account, int countPlus) {
         account.setCount(account.getCount() + countPlus);
         account.setCountPlus(account.getCountPlus() + countPlus);
+        boolean temp = false;
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
             String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET count_account = " + 999 + ", count_plus = " + 999
                     + " WHERE id_account = " + chooseAccount + " AND id_customer = " + choosePerson;
             statement.executeUpdate(query);
+            temp = true;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-            return false;
         } finally {
             try {
                 connection.close();
                 statement.close();
-                return true;
             } catch (SQLException throwable) {
                 throwable.printStackTrace();
-                return false;
+                temp = false;
+            } finally {
+                return temp;
             }
         }
     }
