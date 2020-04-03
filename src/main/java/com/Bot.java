@@ -176,10 +176,10 @@ public class Bot extends TelegramLongPollingBot {
                         setFlsMenu(false, false, true);
                         setFlsACEC(false, false, false, false, false);
                         setPM(false, false);
+                        sendMsg(message, "Счет пополнен");
 //                        sendMsg(message, choosePerson + " " + chooseAccount + " " + account.getId() + " " + account.getCount());
 //                        if (databaseAccount.editCountPlus(chooseAccount, choosePerson, account, Integer.parseInt(message.toString()))) {
 //                            setPM(false, false);
-//                            sendMsg(message, "Счет пополнен");
 //                        }
 //                        else {
 //                            setPM(false, false);
