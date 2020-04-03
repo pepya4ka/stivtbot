@@ -162,7 +162,7 @@ public class Bot extends TelegramLongPollingBot {
                     checkBalance(message);
                     break;
                 case "Закрыть счет":
-                    setFlsACEC(false, false, false, false, false);
+                    setFlsACEC(false, false, false, false, true);
                     setFlsNA(false, false, false);
                     setPM(false, false);
                     deleteAccount(message);
