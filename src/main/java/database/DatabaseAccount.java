@@ -25,7 +25,7 @@ public class DatabaseAccount extends Database {
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
-            String query = "INSERT heroku_b0fe3d77cdb9844.accounts(id_customer, count_account, history) VALUES (" + chooseNumber + ", 350, \"open count\")";
+            String query = "INSERT heroku_b0fe3d77cdb9844.accounts(id_customer, count_account, history) VALUES (" + chooseNumber + ", 350, \"open count\n\")";
             statement.executeUpdate(query);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -57,9 +57,6 @@ public class DatabaseAccount extends Database {
                 tempAccount = new Account();
                 tempAccount.setId(resultSet.getInt(1));
                 tempAccount.setCount(resultSet.getInt(3));
-                tempAccount.setCountPlus(resultSet.getInt(4));
-                tempAccount.setCountMinus(resultSet.getInt(5));
-                tempAccount.setHistory(resultSet.getString(6));
                 accountList.add(tempAccount);
             }
 
@@ -120,11 +117,14 @@ public class DatabaseAccount extends Database {
     public boolean editCountPlus(int chooseAccount, int choosePerson, Account account, int countPlus) {
         account.setCount(account.getCount() + countPlus);
         account.setCountPlus(account.getCountPlus() + countPlus);
+        account.setHistory(account.getHistory() + "Пополнение счета (" + countPlus + ")");
         temp = false;
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
-            String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET count_account = " + account.getCount() + ", count_plus = " + account.getCountPlus()
+            String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET count_account = " + account.getCount()
+                    + ", count_plus = " + account.getCountPlus()
+                    + ", history = '" + account.getHistory() + "'"
                     + " WHERE id_account = " + chooseAccount + " AND id_customer = " + choosePerson;
             statement.executeUpdate(query);
             temp = true;
