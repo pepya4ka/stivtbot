@@ -263,13 +263,14 @@ public class DatabaseAccount extends Database {
 
     public String selectHistory(int chooseAccount, int chooseClient, Account account) {
         account.setHistory(account.getHistory() + "Check history\n");
+        System.err.println(account.getHistory());
         String history = null;
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
             String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET history = '" + account.getHistory() + "'"
                     + " WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
-            resultSet = statement.executeQuery(query);
+            ResultSet resultSet1 = statement.executeQuery(query);
             query = "SELECT * FROM heroku_b0fe3d77cdb9844.accounts WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
             resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
