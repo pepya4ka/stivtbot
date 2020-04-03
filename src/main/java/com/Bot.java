@@ -147,6 +147,7 @@ public class Bot extends TelegramLongPollingBot {
                     break;
                 case "Вклад денег":
                     System.err.println("Вклад денег");
+                    setFlsACEC(false, false, false, true, false);
                     setPM(true, false);
                     System.err.println("flPlus - " + flPlus);
                     sendMsg(message, "Пожалуйста, введите сумму, которую хотите положить на счет");
@@ -171,12 +172,14 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message, sTime);
                     break;
                 default:
+                    System.err.println("Default");
                     if (flPlus) {
-                        int sum = Integer.parseInt(message.toString());
+                        System.err.println("Зашел в flPlus");
+                        String sum = message.toString();
                         System.err.println("Сумма - " + sum);
                         account = databaseAccount.selectAccount(chooseAccount, choosePerson);
                         System.err.println("Аккаунт - " + account.getId());
-                        databaseAccount.editCountPlus(chooseAccount, choosePerson, account, sum);
+                        databaseAccount.editCountPlus(chooseAccount, choosePerson, account, Integer.parseInt(sum));
                         setFlsMenu(false, false, true);
                         setFlsACEC(false, false, false, false, false);
                         setPM(false, false);
