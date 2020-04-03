@@ -18,48 +18,24 @@ public class DatabaseAccount extends Database {
         super();
     }
 
-    private Statement getStatement(Connection connection) {
-        statement = null;
+    public boolean addAccount(int chooseNumber) {
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } finally {
-            return statement;
-        }
-    }
-
-    private void closeCSR(Connection connection, Statement statement, ResultSet resultSet) {
-        try {
-            closeCS(connection, statement);
-            resultSet.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-
-    private void closeCS(Connection connection, Statement statement) {
-        try {
-            connection.close();
-            statement.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-
-
-    public boolean addAccount(int chooseNumber) {
-        try {
-            statement = getStatement(connection);
             String query = "INSERT heroku_b0fe3d77cdb9844.accounts(id_customer, count_account, history) VALUES (" + chooseNumber + ", 350, \"open count\n\")";
             statement.executeUpdate(query);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
             return false;
         } finally {
-            closeCS(connection, statement);
-            return true;
+            try {
+                connection.close();
+                statement.close();
+                return true;
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
+                return false;
+            }
         }
     }
 
@@ -70,7 +46,8 @@ public class DatabaseAccount extends Database {
         stringBuilder.append("Список счетов клиента " + chooseNumber + ":\n");
         int fl = stringBuilder.length();//для проверки пустой строки stringBuilder (если в цикле ничего не запишется)
         try {
-            statement = getStatement(connection);
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
+            statement = connection.createStatement();
             String query = "SELECT * FROM heroku_b0fe3d77cdb9844.accounts WHERE id_customer = " + chooseNumber;
             resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
@@ -89,17 +66,25 @@ public class DatabaseAccount extends Database {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } finally {
-            closeCSR(connection, statement, resultSet);
-            if (stringBuilder.length() == fl)
-                stringBuilder.append("Пусто...");
-            return stringBuilder.toString();
+            try {
+                connection.close();
+                statement.close();
+                resultSet.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } finally {
+                if (stringBuilder.length() == fl)
+                    stringBuilder.append("Пусто...");
+                return stringBuilder.toString();
+            }
         }
     }
 
     public Account selectAccount(int chooseAccount, int chooseClient) {
         Account tempAccount = null;
         try {
-            statement = getStatement(connection);
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
+            statement = connection.createStatement();
             String query = "SELECT * FROM heroku_b0fe3d77cdb9844.accounts WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
             resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
@@ -113,8 +98,16 @@ public class DatabaseAccount extends Database {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } finally {
-            closeCSR(connection, statement, resultSet);
-            return tempAccount;
+            try {
+                connection.close();
+                statement.close();
+                resultSet.close();
+                return tempAccount;
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } finally {
+                return tempAccount;
+            }
         }
     }
 
@@ -124,7 +117,8 @@ public class DatabaseAccount extends Database {
         account.setHistory(account.getHistory() + "Refill (" + countPlus + ")\n");
         temp = false;
         try {
-            statement = getStatement(connection);
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
+            statement = connection.createStatement();
             String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET count_account = " + account.getCount()
                     + ", count_plus = " + account.getCountPlus()
                     + ", history = '" + account.getHistory() + "'"
@@ -134,8 +128,15 @@ public class DatabaseAccount extends Database {
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         } finally {
-            closeCS(connection, statement);
-            return temp;
+            try {
+                connection.close();
+                statement.close();
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
+                temp = false;
+            } finally {
+                return temp;
+            }
         }
     }
 
@@ -145,7 +146,8 @@ public class DatabaseAccount extends Database {
         account.setHistory(account.getHistory() + "Withdrawal (" + countMinus + ")\n");
         temp = false;
         try {
-            statement = getStatement(connection);
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
+            statement = connection.createStatement();
             String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET count_account = " + account.getCount()
                     + ", count_minus = " + account.getCountMinus()
                     + ", history = '" + account.getHistory() + "'"
@@ -155,8 +157,15 @@ public class DatabaseAccount extends Database {
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         } finally {
-            closeCS(connection, statement);
-            return temp;
+            try {
+                connection.close();
+                statement.close();
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
+                temp = false;
+            } finally {
+                return temp;
+            }
         }
     }
 
@@ -164,7 +173,8 @@ public class DatabaseAccount extends Database {
         account.setHistory(account.getHistory() + "Check balance\n");
         String count = null;
         try {
-            statement = getStatement(connection);
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
+            statement = connection.createStatement();
             String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET history = '" + account.getHistory() + "'"
                     + " WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
             resultSet = statement.executeQuery(query);
@@ -176,8 +186,16 @@ public class DatabaseAccount extends Database {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } finally {
-            closeCSR(connection, statement, resultSet);
-            return count;
+            try {
+                connection.close();
+                statement.close();
+                resultSet.close();
+                return count;
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } finally {
+                return count;
+            }
         }
     }
 
@@ -188,7 +206,8 @@ public class DatabaseAccount extends Database {
         stringBuilder.append("Список счетов клиента " + chooseNumber + ":\n");
         int fl = stringBuilder.length();//для проверки пустой строки stringBuilder (если в цикле ничего не запишется)
         try {
-            statement = getStatement(connection);
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
+            statement = connection.createStatement();
             String query = "SELECT * FROM heroku_b0fe3d77cdb9844.accounts WHERE id_customer = " + chooseNumber;
             resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
@@ -210,23 +229,35 @@ public class DatabaseAccount extends Database {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } finally {
-            closeCSR(connection, statement, resultSet);
-            if (stringBuilder.length() == fl)
-                return false;
-            else
-                return true;
+            try {
+                connection.close();
+                statement.close();
+                resultSet.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } finally {
+                if (stringBuilder.length() == fl)
+                    return false;
+                else
+                    return true;
+            }
         }
     }
 
     public void deleteAccount(int chooseAccount, int chooseClient) {
         try {
-            statement = getStatement(connection);
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
+            statement = connection.createStatement();
             String query = "DELETE FROM heroku_b0fe3d77cdb9844.accounts WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
             statement.executeUpdate(query);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-        } finally {
-            closeCS(connection, statement);
+        }
+        try {
+            connection.close();
+            statement.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
     }
 
@@ -234,7 +265,8 @@ public class DatabaseAccount extends Database {
         account.setHistory(account.getHistory() + "Check history\n");
         String history = null;
         try {
-            statement = getStatement(connection);
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
+            statement = connection.createStatement();
             String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET history = '" + account.getHistory() + "'"
                     + " WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
             resultSet = statement.executeQuery(query);
@@ -246,8 +278,16 @@ public class DatabaseAccount extends Database {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } finally {
-            closeCSR(connection, statement, resultSet);
-            return history;
+            try {
+                connection.close();
+                statement.close();
+                resultSet.close();
+                return history;
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } finally {
+                return history;
+            }
         }
     }
 }
