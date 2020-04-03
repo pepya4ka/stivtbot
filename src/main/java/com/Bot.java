@@ -146,9 +146,20 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message, "Пожалуйста, пришлите номер выбранного счета");
                     break;
                 case "Вклад денег":
-                    setFlsACEC(false, false, false, true, false);
+                    setFlsACEC(false, false, false, false, false);
                     setPM(true, false);
                     sendMsg(message, "Пожалуйста, введите сумму, которую хотите положить на счет");
+                    break;
+                case "Снятие денег":
+                    setFlsACEC(false, false, false, false, false);
+                    setPM(false, true);
+                    sendMsg(message, "Пожалуйста, введите сумму, которую хотите снять со счета");
+                    break;
+                case "Просмотр баланса":
+                    setFlsACEC(false, false, false, false, false);
+                    setFlsNA(false, false, false);
+                    setPM(false, false);
+                    checkBalance(message);
                     break;
                 case "Ok":
                     if (flDel) {
@@ -177,6 +188,20 @@ public class Bot extends TelegramLongPollingBot {
                             setPM(false, false);
                             setFlsACEC(false, false, false, false, false);
                             sendMsg(message, "Счет пополнен");
+                            break;
+                        } else {
+                            setPM(false, false);
+                            setFlsACEC(false, false, false, false, false);
+                            sendMsg(message, "Что-то пошло не так, пожалуйста, попробуйте еще раз");
+                            break;
+                        }
+                    }
+                    if (flMinus) {
+                        account = databaseAccount.selectAccount(chooseAccount, choosePerson);
+                        if (databaseAccount.editCountMinus(chooseAccount, choosePerson, account, Integer.parseInt(message.getText()))) {
+                            setPM(false, false);
+                            setFlsACEC(false, false, false, false, false);
+                            sendMsg(message, "Снятие прошло успешно");
                             break;
                         } else {
                             setPM(false, false);
@@ -233,7 +258,6 @@ public class Bot extends TelegramLongPollingBot {
         }
         sendMsg(message, menu);
     }
-
 
     public void deleteClient(Message message) {
         if (databaseAccount.isCheckAccountBills(choosePerson)) {
@@ -424,6 +448,15 @@ public class Bot extends TelegramLongPollingBot {
             sendMsg(message, "Неверный номер счета, попробуй еще раз");
         }
 
+    }
+
+    private void checkBalance(Message message) {
+        String count = databaseAccount.selectCount(chooseAccount, choosePerson);
+        if (count != null) {
+            sendMsg(message, "Баланс счета " + chooseAccount + " составляет - " + count);
+        } else {
+            sendMsg(message, "Что-то пошло не так, попробуйте еще раз!");
+        }
     }
 
 

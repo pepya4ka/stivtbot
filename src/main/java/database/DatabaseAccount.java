@@ -15,6 +15,8 @@ public class DatabaseAccount extends Database {
     private Statement statement;
     private ResultSet resultSet;
 
+    private boolean temp;
+
     public DatabaseAccount() {
         super();
     }
@@ -118,7 +120,7 @@ public class DatabaseAccount extends Database {
     public boolean editCountPlus(int chooseAccount, int choosePerson, Account account, int countPlus) {
         account.setCount(account.getCount() + countPlus);
         account.setCountPlus(account.getCountPlus() + countPlus);
-        boolean temp = false;
+        temp = false;
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
@@ -137,6 +139,58 @@ public class DatabaseAccount extends Database {
                 temp = false;
             } finally {
                 return temp;
+            }
+        }
+    }
+
+    public boolean editCountMinus (int chooseAccount, int choosePerson, Account account, int countMinus) {
+        account.setCount(account.getCount() - countMinus);
+        account.setCountMinus(account.getCountMinus() + countMinus);
+        temp = false;
+        try {
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
+            statement = connection.createStatement();
+            String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET count_account = " + account.getCount() + ", count_minus = " + account.getCountMinus()
+                    + " WHERE id_account = " + chooseAccount + " AND id_customer = " + choosePerson;
+            statement.executeUpdate(query);
+            temp = true;
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        } finally {
+            try {
+                connection.close();
+                statement.close();
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
+                temp = false;
+            } finally {
+                return temp;
+            }
+        }
+    }
+
+    public String selectCount(int chooseAccount, int chooseClient) {
+        String count = null;
+        try {
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
+            statement = connection.createStatement();
+            String query = "SELECT * FROM heroku_b0fe3d77cdb9844.accounts WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
+            resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                count = String.valueOf(resultSet.getInt(3));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            try {
+                connection.close();
+                statement.close();
+                resultSet.close();
+                return count;
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } finally {
+                return count;
             }
         }
     }
