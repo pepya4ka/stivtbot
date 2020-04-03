@@ -273,7 +273,7 @@ public class DatabaseAccount extends Database {
             query = "SELECT * FROM heroku_b0fe3d77cdb9844.accounts WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
             resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
-                history = String.valueOf(resultSet.getString(6));
+                history = resultSet.getString(6);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
