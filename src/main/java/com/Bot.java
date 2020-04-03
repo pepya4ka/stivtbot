@@ -167,6 +167,9 @@ public class Bot extends TelegramLongPollingBot {
                     setPM(false, false);
                     deleteAccount(message);
                     break;
+                case "Просмотр истории":
+                    sendMsg(message, checkHistory(message));
+                    break;
                 case "Ok":
                     if (flDel) {
                         previousMenu(message);
@@ -469,6 +472,14 @@ public class Bot extends TelegramLongPollingBot {
     private void deleteAccount(Message message) {
         databaseAccount.deleteAccount(chooseAccount, choosePerson);
         sendMsg(message, "Счет закрыт, введите \"Ok\"");
+    }
+
+    private String checkHistory(Message message) {
+        account = databaseAccount.selectAccount(chooseAccount, choosePerson);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("История " + account.getId() + " счета:\n");
+        stringBuilder.append(databaseAccount.selectHistory(chooseAccount, choosePerson, account));
+        return stringBuilder.toString();
     }
 
 
