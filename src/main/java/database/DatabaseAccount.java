@@ -270,7 +270,7 @@ public class DatabaseAccount extends Database {
             statement = connection.createStatement();
             String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET history = '" + account.getHistory() + "'"
                     + " WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
-            ResultSet resultSet1 = statement.executeQuery(query);
+            statement.executeUpdate(query);
             query = "SELECT * FROM heroku_b0fe3d77cdb9844.accounts WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
             resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
