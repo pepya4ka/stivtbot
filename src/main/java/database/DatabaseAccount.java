@@ -121,8 +121,8 @@ public class DatabaseAccount extends Database {
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
-            String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET count_account = " + account.getCount() + ", count_plus = "
-                    + account.getCountPlus() + " WHERE id_account = " + chooseAccount + " AND id_customer = " + choosePerson;
+            String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET count_account = " + 999 + ", count_plus = " + 999
+                    + " WHERE id_account = " + chooseAccount + " AND id_customer = " + choosePerson;
             statement.executeUpdate(query);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
