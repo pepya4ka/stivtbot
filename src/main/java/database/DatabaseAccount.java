@@ -116,34 +116,26 @@ public class DatabaseAccount extends Database {
     }
 
     public boolean editCountPlus(int chooseAccount, int choosePerson, Account account, int countPlus) {
-        System.err.println("Hello, logs!");
         account.setCount(account.getCount() + countPlus);
-        System.err.println("Изменен count - " + account.getCount());
         account.setCountPlus(account.getCountPlus() + countPlus);
-        System.err.println("Изменен countPlus - " + account.getCountPlus());
         boolean temp = false;
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
-            String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET count_account = " + 999 + ", count_plus = " + 999
+            String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET count_account = " + account.getCount() + ", count_plus = " + account.getCountPlus()
                     + " WHERE id_account = " + chooseAccount + " AND id_customer = " + choosePerson;
             statement.executeUpdate(query);
-            System.err.println("БД обновлена");
             temp = true;
         } catch (SQLException throwable) {
-            System.err.println("Ошибка");
             throwable.printStackTrace();
         } finally {
             try {
                 connection.close();
                 statement.close();
-                System.err.println("Все подключения закрыл");
             } catch (SQLException throwable) {
                 throwable.printStackTrace();
                 temp = false;
-                System.err.println("Ошибка");
             } finally {
-                System.err.println("Возвращаю бул");
                 return temp;
             }
         }

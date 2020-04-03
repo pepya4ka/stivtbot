@@ -146,10 +146,8 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message, "Пожалуйста, пришлите номер выбранного счета");
                     break;
                 case "Вклад денег":
-                    System.err.println("Вклад денег");
                     setFlsACEC(false, false, false, true, false);
                     setPM(true, false);
-                    System.err.println("flPlus - " + flPlus);
                     sendMsg(message, "Пожалуйста, введите сумму, которую хотите положить на счет");
                     break;
                 case "Ok":
@@ -172,27 +170,20 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message, sTime);
                     break;
                 default:
-                    System.err.println("Default");
+//                    System.err.println("Default");
                     if (flPlus) {
-                        System.err.println("Зашел в flPlus");
-                        String sum = message.getText();
-                        System.err.println("Сумма - " + sum);
                         account = databaseAccount.selectAccount(chooseAccount, choosePerson);
-                        System.err.println("Аккаунт - " + account.getId());
-                        databaseAccount.editCountPlus(chooseAccount, choosePerson, account, Integer.parseInt(sum));
-                        setFlsMenu(false, false, true);
-                        setFlsACEC(false, false, false, false, false);
-                        setPM(false, false);
-                        sendMsg(message, "Счет пополнен");
-                        break;
-//                        sendMsg(message, choosePerson + " " + chooseAccount + " " + account.getId() + " " + account.getCount());
-//                        if (databaseAccount.editCountPlus(chooseAccount, choosePerson, account, Integer.parseInt(message.toString()))) {
-//                            setPM(false, false);
-//                        }
-//                        else {
-//                            setPM(false, false);
-//                            sendMsg(message, "Что-то пошло не так, пожалуйста, попробуйте еще раз");
-//                        }
+                        if (databaseAccount.editCountPlus(chooseAccount, choosePerson, account, Integer.parseInt(message.getText()))) {
+                            setPM(false, false);
+                            setFlsACEC(false, false, false, false, false);
+                            sendMsg(message, "Счет пополнен");
+                            break;
+                        } else {
+                            setPM(false, false);
+                            setFlsACEC(false, false, false, false, false);
+                            sendMsg(message, "Что-то пошло не так, пожалуйста, попробуйте еще раз");
+                            break;
+                        }
                     }
                     if (flAdd) {
                         if (isMatchName(message, message.getText()))
