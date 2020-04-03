@@ -239,4 +239,21 @@ public class DatabaseAccount extends Database {
             }
         }
     }
+
+    public void deleteAccount(int chooseAccount, int chooseClient) {
+        try {
+            connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
+            statement = connection.createStatement();
+            String query = "DELETE FROM heroku_b0fe3d77cdb9844.accounts WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
+            statement.executeUpdate(query);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        try {
+            connection.close();
+            statement.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
 }

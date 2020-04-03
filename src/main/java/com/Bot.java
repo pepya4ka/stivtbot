@@ -161,6 +161,12 @@ public class Bot extends TelegramLongPollingBot {
                     setPM(false, false);
                     checkBalance(message);
                     break;
+                case "Закрыть счет":
+                    setFlsACEC(false, false, false, false, false);
+                    setFlsNA(false, false, false);
+                    setPM(false, false);
+                    deleteAccount(message);
+                    break;
                 case "Ok":
                     if (flDel) {
                         previousMenu(message);
@@ -457,6 +463,11 @@ public class Bot extends TelegramLongPollingBot {
         } else {
             sendMsg(message, "Что-то пошло не так, попробуйте еще раз!");
         }
+    }
+
+    private void deleteAccount(Message message) {
+        databaseAccount.deleteAccount(chooseAccount, choosePerson);
+        sendMsg(message, "Счет закрыт, введите \"Ok\"");
     }
 
 
