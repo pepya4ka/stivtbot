@@ -25,7 +25,7 @@ public class DatabaseAccount extends Database {
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
-            String query = "INSERT heroku_b0fe3d77cdb9844.accounts(id_customer, count_account, history) VALUES (" + chooseNumber + ", 350, \"\")";
+            String query = "INSERT heroku_b0fe3d77cdb9844.accounts(id_customer, count_account, history) VALUES (" + chooseNumber + ", 350, \"open count\")";
             statement.executeUpdate(query);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
