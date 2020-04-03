@@ -457,7 +457,8 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private void checkBalance(Message message) {
-        String count = databaseAccount.selectCount(chooseAccount, choosePerson);
+        account = databaseAccount.selectAccount(chooseAccount, choosePerson);
+        String count = databaseAccount.selectCount(chooseAccount, choosePerson, account);
         if (count != null) {
             sendMsg(message, "Баланс счета " + chooseAccount + " составляет - " + count);
         } else {

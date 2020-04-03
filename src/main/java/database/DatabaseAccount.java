@@ -117,7 +117,7 @@ public class DatabaseAccount extends Database {
     public boolean editCountPlus(int chooseAccount, int choosePerson, Account account, int countPlus) {
         account.setCount(account.getCount() + countPlus);
         account.setCountPlus(account.getCountPlus() + countPlus);
-        account.setHistory(account.getHistory() + "Пополнение счета (" + countPlus + ")");
+        account.setHistory(account.getHistory() + "Refill (" + countPlus + ")\n");
         temp = false;
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
@@ -143,14 +143,17 @@ public class DatabaseAccount extends Database {
         }
     }
 
-    public boolean editCountMinus (int chooseAccount, int choosePerson, Account account, int countMinus) {
+    public boolean editCountMinus (int chooseAccount, int choosePerson, Account account, int countMinus) {//Withdrawal - снятие со счета
         account.setCount(account.getCount() - countMinus);
         account.setCountMinus(account.getCountMinus() + countMinus);
+        account.setHistory(account.getHistory() + "Withdrawal (" + countMinus + ")\n");
         temp = false;
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
-            String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET count_account = " + account.getCount() + ", count_minus = " + account.getCountMinus()
+            String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET count_account = " + account.getCount()
+                    + ", count_minus = " + account.getCountMinus()
+                    + ", history = '" + account.getHistory() + "'"
                     + " WHERE id_account = " + chooseAccount + " AND id_customer = " + choosePerson;
             statement.executeUpdate(query);
             temp = true;
@@ -169,12 +172,16 @@ public class DatabaseAccount extends Database {
         }
     }
 
-    public String selectCount(int chooseAccount, int chooseClient) {
+    public String selectCount(int chooseAccount, int chooseClient, Account account) {
+        account.setHistory(account.getHistory() + "Check balance\n");
         String count = null;
         try {
             connection = DriverManager.getConnection(getConnectionString(), getLogin(), getPassword());
             statement = connection.createStatement();
-            String query = "SELECT * FROM heroku_b0fe3d77cdb9844.accounts WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
+            String query = "UPDATE heroku_b0fe3d77cdb9844.accounts SET history = '" + account.getHistory() + "'"
+                    + " WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
+            resultSet = statement.executeQuery(query);
+            query = "SELECT * FROM heroku_b0fe3d77cdb9844.accounts WHERE id_account = " + chooseAccount + " AND id_customer = " + chooseClient;
             resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 count = String.valueOf(resultSet.getInt(3));
