@@ -98,7 +98,6 @@ public class Bot extends TelegramLongPollingBot {
         if (message != null && message.hasText()) {
             switch (message.getText()) {
                 case "/start":
-                    System.err.println("Hello, logs!");
                     setFlsMenu(true, false, false);
                     setFlsACEC(false, false, false, false, false);
                     setFlsNA(false, false, false);
